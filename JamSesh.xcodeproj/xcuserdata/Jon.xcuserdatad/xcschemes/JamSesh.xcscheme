@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FCA2F0FF166C033D007DA190"
+               BlueprintIdentifier = "FCA2F199166C0502007DA190"
                BuildableName = "JamSesh.app"
                BlueprintName = "JamSesh"
                ReferencedContainer = "container:JamSesh.xcodeproj">
@@ -32,7 +32,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FCA2F129166C033D007DA190"
+               BlueprintIdentifier = "FCA2F1C3166C0502007DA190"
                BuildableName = "JamSeshTests.octest"
                BlueprintName = "JamSeshTests"
                ReferencedContainer = "container:JamSesh.xcodeproj">
@@ -42,7 +42,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FCA2F0FF166C033D007DA190"
+            BlueprintIdentifier = "FCA2F199166C0502007DA190"
             BuildableName = "JamSesh.app"
             BlueprintName = "JamSesh"
             ReferencedContainer = "container:JamSesh.xcodeproj">
@@ -61,7 +61,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FCA2F0FF166C033D007DA190"
+            BlueprintIdentifier = "FCA2F199166C0502007DA190"
             BuildableName = "JamSesh.app"
             BlueprintName = "JamSesh"
             ReferencedContainer = "container:JamSesh.xcodeproj">
@@ -79,7 +79,7 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FCA2F0FF166C033D007DA190"
+            BlueprintIdentifier = "FCA2F199166C0502007DA190"
             BuildableName = "JamSesh.app"
             BlueprintName = "JamSesh"
             ReferencedContainer = "container:JamSesh.xcodeproj">

@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
-@interface ViewController : UIViewController
+static const int kIdle = 0;
+static const int kPlaying = 1;
+static const int kRecording = 2;
+static const int kOther = 3;
+
+@interface ViewController : UIViewController <AVAudioPlayerDelegate, AVAudioRecorderDelegate>
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag;
 
 @end

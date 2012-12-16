@@ -7,158 +7,183 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FCA2F105166C033D007DA190 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F104166C033D007DA190 /* UIKit.framework */; };
-		FCA2F107166C033D007DA190 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F106166C033D007DA190 /* Foundation.framework */; };
-		FCA2F109166C033D007DA190 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F108166C033D007DA190 /* CoreGraphics.framework */; };
-		FCA2F10F166C033D007DA190 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F10D166C033D007DA190 /* InfoPlist.strings */; };
-		FCA2F111166C033D007DA190 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F110166C033D007DA190 /* main.m */; };
-		FCA2F115166C033D007DA190 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F114166C033D007DA190 /* AppDelegate.m */; };
-		FCA2F117166C033D007DA190 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F116166C033D007DA190 /* Default.png */; };
-		FCA2F119166C033D007DA190 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F118166C033D007DA190 /* Default@2x.png */; };
-		FCA2F11B166C033D007DA190 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F11A166C033D007DA190 /* Default-568h@2x.png */; };
-		FCA2F11E166C033D007DA190 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F11C166C033D007DA190 /* MainStoryboard_iPhone.storyboard */; };
-		FCA2F121166C033D007DA190 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F11F166C033D007DA190 /* MainStoryboard_iPad.storyboard */; };
-		FCA2F124166C033D007DA190 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F123166C033D007DA190 /* ViewController.m */; };
-		FCA2F12C166C033D007DA190 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F12B166C033D007DA190 /* SenTestingKit.framework */; };
-		FCA2F12D166C033D007DA190 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F104166C033D007DA190 /* UIKit.framework */; };
-		FCA2F12E166C033D007DA190 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F106166C033D007DA190 /* Foundation.framework */; };
-		FCA2F136166C033D007DA190 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F134166C033D007DA190 /* InfoPlist.strings */; };
-		FCA2F139166C033D007DA190 /* JamSeshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F138166C033D007DA190 /* JamSeshTests.m */; };
+		FC0D20441675552C008AEACF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC0D20431675552C008AEACF /* AVFoundation.framework */; };
+		FC1187B7167D70C900E1E0E3 /* RecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1187B6167D70C900E1E0E3 /* RecordViewController.m */; };
+		FC1187BB167D714700E1E0E3 /* NewTrackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = FC1187BA167D714700E1E0E3 /* NewTrackView.xib */; };
+		FC1187BE167D736700E1E0E3 /* NewTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = FC1187BD167D736700E1E0E3 /* NewTrackView.m */; };
+		FCA2F19F166C0502007DA190 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F19E166C0502007DA190 /* UIKit.framework */; };
+		FCA2F1A1166C0502007DA190 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F1A0166C0502007DA190 /* Foundation.framework */; };
+		FCA2F1A3166C0502007DA190 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F1A2166C0502007DA190 /* CoreGraphics.framework */; };
+		FCA2F1A9166C0502007DA190 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1A7166C0502007DA190 /* InfoPlist.strings */; };
+		FCA2F1AB166C0502007DA190 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F1AA166C0502007DA190 /* main.m */; };
+		FCA2F1AF166C0502007DA190 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F1AE166C0502007DA190 /* AppDelegate.m */; };
+		FCA2F1B1166C0502007DA190 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1B0166C0502007DA190 /* Default.png */; };
+		FCA2F1B3166C0502007DA190 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1B2166C0502007DA190 /* Default@2x.png */; };
+		FCA2F1B5166C0502007DA190 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1B4166C0502007DA190 /* Default-568h@2x.png */; };
+		FCA2F1B8166C0502007DA190 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1B6166C0502007DA190 /* MainStoryboard_iPhone.storyboard */; };
+		FCA2F1BB166C0502007DA190 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1B9166C0502007DA190 /* MainStoryboard_iPad.storyboard */; };
+		FCA2F1BE166C0502007DA190 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F1BD166C0502007DA190 /* ViewController.m */; };
+		FCA2F1C6166C0502007DA190 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F1C5166C0502007DA190 /* SenTestingKit.framework */; };
+		FCA2F1C7166C0502007DA190 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F19E166C0502007DA190 /* UIKit.framework */; };
+		FCA2F1C8166C0502007DA190 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCA2F1A0166C0502007DA190 /* Foundation.framework */; };
+		FCA2F1D0166C0502007DA190 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = FCA2F1CE166C0502007DA190 /* InfoPlist.strings */; };
+		FCA2F1D3166C0502007DA190 /* JamSeshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FCA2F1D2166C0502007DA190 /* JamSeshTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FCA2F12F166C033D007DA190 /* PBXContainerItemProxy */ = {
+		FCA2F1C9166C0502007DA190 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FCA2F0F7166C033D007DA190 /* Project object */;
+			containerPortal = FCA2F191166C0502007DA190 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = FCA2F0FF166C033D007DA190;
+			remoteGlobalIDString = FCA2F199166C0502007DA190;
 			remoteInfo = JamSesh;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		FCA2F100166C033D007DA190 /* JamSesh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JamSesh.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FCA2F104166C033D007DA190 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		FCA2F106166C033D007DA190 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FCA2F108166C033D007DA190 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		FCA2F10C166C033D007DA190 /* JamSesh-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JamSesh-Info.plist"; sourceTree = "<group>"; };
-		FCA2F10E166C033D007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		FCA2F110166C033D007DA190 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		FCA2F112166C033D007DA190 /* JamSesh-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JamSesh-Prefix.pch"; sourceTree = "<group>"; };
-		FCA2F113166C033D007DA190 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		FCA2F114166C033D007DA190 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		FCA2F116166C033D007DA190 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		FCA2F118166C033D007DA190 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		FCA2F11A166C033D007DA190 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		FCA2F11D166C033D007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
-		FCA2F120166C033D007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
-		FCA2F122166C033D007DA190 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		FCA2F123166C033D007DA190 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		FCA2F12A166C033D007DA190 /* JamSeshTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamSeshTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FCA2F12B166C033D007DA190 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
-		FCA2F133166C033D007DA190 /* JamSeshTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JamSeshTests-Info.plist"; sourceTree = "<group>"; };
-		FCA2F135166C033D007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		FCA2F137166C033D007DA190 /* JamSeshTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamSeshTests.h; sourceTree = "<group>"; };
-		FCA2F138166C033D007DA190 /* JamSeshTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JamSeshTests.m; sourceTree = "<group>"; };
+		FC0D20431675552C008AEACF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		FC1187B5167D70C900E1E0E3 /* RecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordViewController.h; sourceTree = "<group>"; };
+		FC1187B6167D70C900E1E0E3 /* RecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordViewController.m; sourceTree = "<group>"; };
+		FC1187BA167D714700E1E0E3 /* NewTrackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewTrackView.xib; sourceTree = "<group>"; };
+		FC1187BC167D736700E1E0E3 /* NewTrackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTrackView.h; sourceTree = "<group>"; };
+		FC1187BD167D736700E1E0E3 /* NewTrackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTrackView.m; sourceTree = "<group>"; };
+		FCA2F19A166C0502007DA190 /* JamSesh.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JamSesh.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCA2F19E166C0502007DA190 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FCA2F1A0166C0502007DA190 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FCA2F1A2166C0502007DA190 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		FCA2F1A6166C0502007DA190 /* JamSesh-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JamSesh-Info.plist"; sourceTree = "<group>"; };
+		FCA2F1A8166C0502007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		FCA2F1AA166C0502007DA190 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		FCA2F1AC166C0502007DA190 /* JamSesh-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "JamSesh-Prefix.pch"; sourceTree = "<group>"; };
+		FCA2F1AD166C0502007DA190 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		FCA2F1AE166C0502007DA190 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		FCA2F1B0166C0502007DA190 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		FCA2F1B2166C0502007DA190 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		FCA2F1B4166C0502007DA190 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		FCA2F1B7166C0502007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
+		FCA2F1BA166C0502007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
+		FCA2F1BC166C0502007DA190 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		FCA2F1BD166C0502007DA190 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		FCA2F1C4166C0502007DA190 /* JamSeshTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamSeshTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCA2F1C5166C0502007DA190 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		FCA2F1CD166C0502007DA190 /* JamSeshTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JamSeshTests-Info.plist"; sourceTree = "<group>"; };
+		FCA2F1CF166C0502007DA190 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		FCA2F1D1166C0502007DA190 /* JamSeshTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamSeshTests.h; sourceTree = "<group>"; };
+		FCA2F1D2166C0502007DA190 /* JamSeshTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JamSeshTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		FCA2F0FD166C033D007DA190 /* Frameworks */ = {
+		FCA2F197166C0502007DA190 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA2F105166C033D007DA190 /* UIKit.framework in Frameworks */,
-				FCA2F107166C033D007DA190 /* Foundation.framework in Frameworks */,
-				FCA2F109166C033D007DA190 /* CoreGraphics.framework in Frameworks */,
+				FC0D20441675552C008AEACF /* AVFoundation.framework in Frameworks */,
+				FCA2F19F166C0502007DA190 /* UIKit.framework in Frameworks */,
+				FCA2F1A1166C0502007DA190 /* Foundation.framework in Frameworks */,
+				FCA2F1A3166C0502007DA190 /* CoreGraphics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCA2F126166C033D007DA190 /* Frameworks */ = {
+		FCA2F1C0166C0502007DA190 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA2F12C166C033D007DA190 /* SenTestingKit.framework in Frameworks */,
-				FCA2F12D166C033D007DA190 /* UIKit.framework in Frameworks */,
-				FCA2F12E166C033D007DA190 /* Foundation.framework in Frameworks */,
+				FCA2F1C6166C0502007DA190 /* SenTestingKit.framework in Frameworks */,
+				FCA2F1C7166C0502007DA190 /* UIKit.framework in Frameworks */,
+				FCA2F1C8166C0502007DA190 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		FCA2F0F5166C033D007DA190 = {
+		FC1187B9167D711B00E1E0E3 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F10A166C033D007DA190 /* JamSesh */,
-				FCA2F131166C033D007DA190 /* JamSeshTests */,
-				FCA2F103166C033D007DA190 /* Frameworks */,
-				FCA2F101166C033D007DA190 /* Products */,
+				FCA2F1B6166C0502007DA190 /* MainStoryboard_iPhone.storyboard */,
+				FCA2F1B9166C0502007DA190 /* MainStoryboard_iPad.storyboard */,
+				FC1187BA167D714700E1E0E3 /* NewTrackView.xib */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
+		FCA2F18F166C0502007DA190 = {
+			isa = PBXGroup;
+			children = (
+				FC0D20431675552C008AEACF /* AVFoundation.framework */,
+				FCA2F1A4166C0502007DA190 /* JamSesh */,
+				FCA2F1CB166C0502007DA190 /* JamSeshTests */,
+				FCA2F19D166C0502007DA190 /* Frameworks */,
+				FCA2F19B166C0502007DA190 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		FCA2F101166C033D007DA190 /* Products */ = {
+		FCA2F19B166C0502007DA190 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F100166C033D007DA190 /* JamSesh.app */,
-				FCA2F12A166C033D007DA190 /* JamSeshTests.octest */,
+				FCA2F19A166C0502007DA190 /* JamSesh.app */,
+				FCA2F1C4166C0502007DA190 /* JamSeshTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FCA2F103166C033D007DA190 /* Frameworks */ = {
+		FCA2F19D166C0502007DA190 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F104166C033D007DA190 /* UIKit.framework */,
-				FCA2F106166C033D007DA190 /* Foundation.framework */,
-				FCA2F108166C033D007DA190 /* CoreGraphics.framework */,
-				FCA2F12B166C033D007DA190 /* SenTestingKit.framework */,
+				FCA2F19E166C0502007DA190 /* UIKit.framework */,
+				FCA2F1A0166C0502007DA190 /* Foundation.framework */,
+				FCA2F1A2166C0502007DA190 /* CoreGraphics.framework */,
+				FCA2F1C5166C0502007DA190 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		FCA2F10A166C033D007DA190 /* JamSesh */ = {
+		FCA2F1A4166C0502007DA190 /* JamSesh */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F113166C033D007DA190 /* AppDelegate.h */,
-				FCA2F114166C033D007DA190 /* AppDelegate.m */,
-				FCA2F11C166C033D007DA190 /* MainStoryboard_iPhone.storyboard */,
-				FCA2F11F166C033D007DA190 /* MainStoryboard_iPad.storyboard */,
-				FCA2F122166C033D007DA190 /* ViewController.h */,
-				FCA2F123166C033D007DA190 /* ViewController.m */,
-				FCA2F10B166C033D007DA190 /* Supporting Files */,
+				FC1187B9167D711B00E1E0E3 /* UI */,
+				FCA2F1AD166C0502007DA190 /* AppDelegate.h */,
+				FCA2F1AE166C0502007DA190 /* AppDelegate.m */,
+				FCA2F1BC166C0502007DA190 /* ViewController.h */,
+				FCA2F1BD166C0502007DA190 /* ViewController.m */,
+				FCA2F1A5166C0502007DA190 /* Supporting Files */,
+				FC1187B5167D70C900E1E0E3 /* RecordViewController.h */,
+				FC1187B6167D70C900E1E0E3 /* RecordViewController.m */,
+				FC1187BC167D736700E1E0E3 /* NewTrackView.h */,
+				FC1187BD167D736700E1E0E3 /* NewTrackView.m */,
 			);
 			path = JamSesh;
 			sourceTree = "<group>";
 		};
-		FCA2F10B166C033D007DA190 /* Supporting Files */ = {
+		FCA2F1A5166C0502007DA190 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F10C166C033D007DA190 /* JamSesh-Info.plist */,
-				FCA2F10D166C033D007DA190 /* InfoPlist.strings */,
-				FCA2F110166C033D007DA190 /* main.m */,
-				FCA2F112166C033D007DA190 /* JamSesh-Prefix.pch */,
-				FCA2F116166C033D007DA190 /* Default.png */,
-				FCA2F118166C033D007DA190 /* Default@2x.png */,
-				FCA2F11A166C033D007DA190 /* Default-568h@2x.png */,
+				FCA2F1A6166C0502007DA190 /* JamSesh-Info.plist */,
+				FCA2F1A7166C0502007DA190 /* InfoPlist.strings */,
+				FCA2F1AA166C0502007DA190 /* main.m */,
+				FCA2F1AC166C0502007DA190 /* JamSesh-Prefix.pch */,
+				FCA2F1B0166C0502007DA190 /* Default.png */,
+				FCA2F1B2166C0502007DA190 /* Default@2x.png */,
+				FCA2F1B4166C0502007DA190 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		FCA2F131166C033D007DA190 /* JamSeshTests */ = {
+		FCA2F1CB166C0502007DA190 /* JamSeshTests */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F137166C033D007DA190 /* JamSeshTests.h */,
-				FCA2F138166C033D007DA190 /* JamSeshTests.m */,
-				FCA2F132166C033D007DA190 /* Supporting Files */,
+				FCA2F1D1166C0502007DA190 /* JamSeshTests.h */,
+				FCA2F1D2166C0502007DA190 /* JamSeshTests.m */,
+				FCA2F1CC166C0502007DA190 /* Supporting Files */,
 			);
 			path = JamSeshTests;
 			sourceTree = "<group>";
 		};
-		FCA2F132166C033D007DA190 /* Supporting Files */ = {
+		FCA2F1CC166C0502007DA190 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				FCA2F133166C033D007DA190 /* JamSeshTests-Info.plist */,
-				FCA2F134166C033D007DA190 /* InfoPlist.strings */,
+				FCA2F1CD166C0502007DA190 /* JamSeshTests-Info.plist */,
+				FCA2F1CE166C0502007DA190 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -166,13 +191,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FCA2F0FF166C033D007DA190 /* JamSesh */ = {
+		FCA2F199166C0502007DA190 /* JamSesh */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FCA2F13C166C033D007DA190 /* Build configuration list for PBXNativeTarget "JamSesh" */;
+			buildConfigurationList = FCA2F1D6166C0502007DA190 /* Build configuration list for PBXNativeTarget "JamSesh" */;
 			buildPhases = (
-				FCA2F0FC166C033D007DA190 /* Sources */,
-				FCA2F0FD166C033D007DA190 /* Frameworks */,
-				FCA2F0FE166C033D007DA190 /* Resources */,
+				FCA2F196166C0502007DA190 /* Sources */,
+				FCA2F197166C0502007DA190 /* Frameworks */,
+				FCA2F198166C0502007DA190 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -180,81 +205,82 @@
 			);
 			name = JamSesh;
 			productName = JamSesh;
-			productReference = FCA2F100166C033D007DA190 /* JamSesh.app */;
+			productReference = FCA2F19A166C0502007DA190 /* JamSesh.app */;
 			productType = "com.apple.product-type.application";
 		};
-		FCA2F129166C033D007DA190 /* JamSeshTests */ = {
+		FCA2F1C3166C0502007DA190 /* JamSeshTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FCA2F13F166C033D007DA190 /* Build configuration list for PBXNativeTarget "JamSeshTests" */;
+			buildConfigurationList = FCA2F1D9166C0502007DA190 /* Build configuration list for PBXNativeTarget "JamSeshTests" */;
 			buildPhases = (
-				FCA2F125166C033D007DA190 /* Sources */,
-				FCA2F126166C033D007DA190 /* Frameworks */,
-				FCA2F127166C033D007DA190 /* Resources */,
-				FCA2F128166C033D007DA190 /* ShellScript */,
+				FCA2F1BF166C0502007DA190 /* Sources */,
+				FCA2F1C0166C0502007DA190 /* Frameworks */,
+				FCA2F1C1166C0502007DA190 /* Resources */,
+				FCA2F1C2166C0502007DA190 /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				FCA2F130166C033D007DA190 /* PBXTargetDependency */,
+				FCA2F1CA166C0502007DA190 /* PBXTargetDependency */,
 			);
 			name = JamSeshTests;
 			productName = JamSeshTests;
-			productReference = FCA2F12A166C033D007DA190 /* JamSeshTests.octest */;
+			productReference = FCA2F1C4166C0502007DA190 /* JamSeshTests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		FCA2F0F7166C033D007DA190 /* Project object */ = {
+		FCA2F191166C0502007DA190 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = OneHeadedLlama;
 			};
-			buildConfigurationList = FCA2F0FA166C033D007DA190 /* Build configuration list for PBXProject "JamSesh" */;
+			buildConfigurationList = FCA2F194166C0502007DA190 /* Build configuration list for PBXProject "JamSesh" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = FCA2F0F5166C033D007DA190;
-			productRefGroup = FCA2F101166C033D007DA190 /* Products */;
+			mainGroup = FCA2F18F166C0502007DA190;
+			productRefGroup = FCA2F19B166C0502007DA190 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FCA2F0FF166C033D007DA190 /* JamSesh */,
-				FCA2F129166C033D007DA190 /* JamSeshTests */,
+				FCA2F199166C0502007DA190 /* JamSesh */,
+				FCA2F1C3166C0502007DA190 /* JamSeshTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		FCA2F0FE166C033D007DA190 /* Resources */ = {
+		FCA2F198166C0502007DA190 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA2F10F166C033D007DA190 /* InfoPlist.strings in Resources */,
-				FCA2F117166C033D007DA190 /* Default.png in Resources */,
-				FCA2F119166C033D007DA190 /* Default@2x.png in Resources */,
-				FCA2F11B166C033D007DA190 /* Default-568h@2x.png in Resources */,
-				FCA2F11E166C033D007DA190 /* MainStoryboard_iPhone.storyboard in Resources */,
-				FCA2F121166C033D007DA190 /* MainStoryboard_iPad.storyboard in Resources */,
+				FCA2F1A9166C0502007DA190 /* InfoPlist.strings in Resources */,
+				FCA2F1B1166C0502007DA190 /* Default.png in Resources */,
+				FCA2F1B3166C0502007DA190 /* Default@2x.png in Resources */,
+				FCA2F1B5166C0502007DA190 /* Default-568h@2x.png in Resources */,
+				FCA2F1B8166C0502007DA190 /* MainStoryboard_iPhone.storyboard in Resources */,
+				FCA2F1BB166C0502007DA190 /* MainStoryboard_iPad.storyboard in Resources */,
+				FC1187BB167D714700E1E0E3 /* NewTrackView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCA2F127166C033D007DA190 /* Resources */ = {
+		FCA2F1C1166C0502007DA190 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA2F136166C033D007DA190 /* InfoPlist.strings in Resources */,
+				FCA2F1D0166C0502007DA190 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		FCA2F128166C033D007DA190 /* ShellScript */ = {
+		FCA2F1C2166C0502007DA190 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -270,63 +296,65 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FCA2F0FC166C033D007DA190 /* Sources */ = {
+		FCA2F196166C0502007DA190 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA2F111166C033D007DA190 /* main.m in Sources */,
-				FCA2F115166C033D007DA190 /* AppDelegate.m in Sources */,
-				FCA2F124166C033D007DA190 /* ViewController.m in Sources */,
+				FCA2F1AB166C0502007DA190 /* main.m in Sources */,
+				FCA2F1AF166C0502007DA190 /* AppDelegate.m in Sources */,
+				FCA2F1BE166C0502007DA190 /* ViewController.m in Sources */,
+				FC1187B7167D70C900E1E0E3 /* RecordViewController.m in Sources */,
+				FC1187BE167D736700E1E0E3 /* NewTrackView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCA2F125166C033D007DA190 /* Sources */ = {
+		FCA2F1BF166C0502007DA190 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA2F139166C033D007DA190 /* JamSeshTests.m in Sources */,
+				FCA2F1D3166C0502007DA190 /* JamSeshTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FCA2F130166C033D007DA190 /* PBXTargetDependency */ = {
+		FCA2F1CA166C0502007DA190 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = FCA2F0FF166C033D007DA190 /* JamSesh */;
-			targetProxy = FCA2F12F166C033D007DA190 /* PBXContainerItemProxy */;
+			target = FCA2F199166C0502007DA190 /* JamSesh */;
+			targetProxy = FCA2F1C9166C0502007DA190 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		FCA2F10D166C033D007DA190 /* InfoPlist.strings */ = {
+		FCA2F1A7166C0502007DA190 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				FCA2F10E166C033D007DA190 /* en */,
+				FCA2F1A8166C0502007DA190 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		FCA2F11C166C033D007DA190 /* MainStoryboard_iPhone.storyboard */ = {
+		FCA2F1B6166C0502007DA190 /* MainStoryboard_iPhone.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				FCA2F11D166C033D007DA190 /* en */,
+				FCA2F1B7166C0502007DA190 /* en */,
 			);
 			name = MainStoryboard_iPhone.storyboard;
 			sourceTree = "<group>";
 		};
-		FCA2F11F166C033D007DA190 /* MainStoryboard_iPad.storyboard */ = {
+		FCA2F1B9166C0502007DA190 /* MainStoryboard_iPad.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				FCA2F120166C033D007DA190 /* en */,
+				FCA2F1BA166C0502007DA190 /* en */,
 			);
 			name = MainStoryboard_iPad.storyboard;
 			sourceTree = "<group>";
 		};
-		FCA2F134166C033D007DA190 /* InfoPlist.strings */ = {
+		FCA2F1CE166C0502007DA190 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				FCA2F135166C033D007DA190 /* en */,
+				FCA2F1CF166C0502007DA190 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -334,7 +362,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		FCA2F13A166C033D007DA190 /* Debug */ = {
+		FCA2F1D4166C0502007DA190 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -363,7 +391,7 @@
 			};
 			name = Debug;
 		};
-		FCA2F13B166C033D007DA190 /* Release */ = {
+		FCA2F1D5166C0502007DA190 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -386,29 +414,31 @@
 			};
 			name = Release;
 		};
-		FCA2F13D166C033D007DA190 /* Debug */ = {
+		FCA2F1D7166C0502007DA190 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "JamSesh/JamSesh-Prefix.pch";
 				INFOPLIST_FILE = "JamSesh/JamSesh-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		FCA2F13E166C033D007DA190 /* Release */ = {
+		FCA2F1D8166C0502007DA190 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "JamSesh/JamSesh-Prefix.pch";
 				INFOPLIST_FILE = "JamSesh/JamSesh-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
-		FCA2F140166C033D007DA190 /* Debug */ = {
+		FCA2F1DA166C0502007DA190 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/JamSesh.app/JamSesh";
@@ -425,7 +455,7 @@
 			};
 			name = Debug;
 		};
-		FCA2F141166C033D007DA190 /* Release */ = {
+		FCA2F1DB166C0502007DA190 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/JamSesh.app/JamSesh";
@@ -445,32 +475,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FCA2F0FA166C033D007DA190 /* Build configuration list for PBXProject "JamSesh" */ = {
+		FCA2F194166C0502007DA190 /* Build configuration list for PBXProject "JamSesh" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCA2F13A166C033D007DA190 /* Debug */,
-				FCA2F13B166C033D007DA190 /* Release */,
+				FCA2F1D4166C0502007DA190 /* Debug */,
+				FCA2F1D5166C0502007DA190 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FCA2F13C166C033D007DA190 /* Build configuration list for PBXNativeTarget "JamSesh" */ = {
+		FCA2F1D6166C0502007DA190 /* Build configuration list for PBXNativeTarget "JamSesh" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCA2F13D166C033D007DA190 /* Debug */,
-				FCA2F13E166C033D007DA190 /* Release */,
+				FCA2F1D7166C0502007DA190 /* Debug */,
+				FCA2F1D8166C0502007DA190 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
-		FCA2F13F166C033D007DA190 /* Build configuration list for PBXNativeTarget "JamSeshTests" */ = {
+		FCA2F1D9166C0502007DA190 /* Build configuration list for PBXNativeTarget "JamSeshTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCA2F140166C033D007DA190 /* Debug */,
-				FCA2F141166C033D007DA190 /* Release */,
+				FCA2F1DA166C0502007DA190 /* Debug */,
+				FCA2F1DB166C0502007DA190 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = FCA2F0F7166C033D007DA190 /* Project object */;
+	rootObject = FCA2F191166C0502007DA190 /* Project object */;
 }
