@@ -18,8 +18,9 @@
 @property (strong, nonatomic) NSString *basePath;
 @property (strong, nonatomic) NSMutableArray *audioPlayers;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
-@property (nonatomic) int completedTracks;
-@property (nonatomic) int unmutedTracks;
+
+@property (nonatomic) int numCompletedTracks;
+@property (nonatomic) int numUnmutedTracks;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
 
@@ -179,10 +180,10 @@
     }
     
     if (!sender.on) {
-        self.unmutedTracks--;
+        self.numUnmutedTracks--;
     }
     else {
-        self.unmutedTracks++;
+        self.numUnmutedTracks++;
     }
 }
 
@@ -241,7 +242,7 @@
 
 -(void)playAudio
 {
-    if (self.unmutedTracks > 0) {
+    if (self.numUnmutedTracks > 0) {
         self.recordButton.enabled = NO;
         [self.playButton setTitle:@"Stop" forState:UIControlStateNormal];
         [self playAllRecordedTracks];
@@ -288,7 +289,7 @@
         [self.audioPlayers addObject:player];
         
         if (![[trackData valueForKey:@"muted"] boolValue]) {
-            self.unmutedTracks++;
+            self.numUnmutedTracks++;
         }
     }
 }
@@ -335,10 +336,10 @@
 #pragma AVAudioPlayerDelegate
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    self.completedTracks++;
+    self.numCompletedTracks++;
     
-    if (self.completedTracks == self.unmutedTracks) {
-        self.completedTracks = 0;
+    if (self.numCompletedTracks == self.numUnmutedTracks) {
+        self.numCompletedTracks = 0;
         [self stop];
     }
 }
