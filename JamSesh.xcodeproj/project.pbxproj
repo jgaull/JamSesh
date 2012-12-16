@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		C8544914167DC29D00332212 /* RecordedTrackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C8544913167DC29D00332212 /* RecordedTrackView.xib */; };
-		C8544917167DC3CF00332212 /* RecordedTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8544916167DC3CF00332212 /* RecordedTrackView.m */; };
 		C8BDB564167D93F200E73D07 /* NewTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8BDB560167D93F200E73D07 /* NewTrackView.m */; };
 		C8BDB565167D93F200E73D07 /* NewTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8BDB560167D93F200E73D07 /* NewTrackView.m */; };
 		C8BDB566167D93F200E73D07 /* NewTrackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C8BDB561167D93F200E73D07 /* NewTrackView.xib */; };
@@ -27,12 +26,14 @@
 		C8E99AB5167D9347008CB6C0 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E99AB4167D9347008CB6C0 /* Default-568h@2x.png */; };
 		C8E99AB8167D9347008CB6C0 /* MainStoryboard_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C8E99AB6167D9347008CB6C0 /* MainStoryboard_iPhone.storyboard */; };
 		C8E99ABB167D9347008CB6C0 /* MainStoryboard_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C8E99AB9167D9347008CB6C0 /* MainStoryboard_iPad.storyboard */; };
-		C8E99ABE167D9347008CB6C0 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E99ABD167D9347008CB6C0 /* ViewController.m */; };
 		C8E99AC6167D9348008CB6C0 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E99AC5167D9348008CB6C0 /* SenTestingKit.framework */; };
 		C8E99AC7167D9348008CB6C0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E99A9E167D9346008CB6C0 /* UIKit.framework */; };
 		C8E99AC8167D9348008CB6C0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8E99AA0167D9346008CB6C0 /* Foundation.framework */; };
 		C8E99AD0167D9348008CB6C0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C8E99ACE167D9348008CB6C0 /* InfoPlist.strings */; };
 		C8E99AD3167D9348008CB6C0 /* JamSeshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E99AD2167D9348008CB6C0 /* JamSeshTests.m */; };
+		FC09CF85167E42AF00624B72 /* TrackModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FC09CF83167E42AF00624B72 /* TrackModel.xcdatamodeld */; };
+		FC09CFDD167E4A0900624B72 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC09CFDC167E4A0900624B72 /* CoreData.framework */; };
+		FC09CFE3167E693700624B72 /* RecordedTrackCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FC09CFE2167E693700624B72 /* RecordedTrackCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,8 +48,6 @@
 
 /* Begin PBXFileReference section */
 		C8544913167DC29D00332212 /* RecordedTrackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RecordedTrackView.xib; sourceTree = "<group>"; };
-		C8544915167DC3CF00332212 /* RecordedTrackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordedTrackView.h; sourceTree = "<group>"; };
-		C8544916167DC3CF00332212 /* RecordedTrackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordedTrackView.m; sourceTree = "<group>"; };
 		C8BDB55F167D93F200E73D07 /* NewTrackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTrackView.h; sourceTree = "<group>"; };
 		C8BDB560167D93F200E73D07 /* NewTrackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTrackView.m; sourceTree = "<group>"; };
 		C8BDB561167D93F200E73D07 /* NewTrackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewTrackView.xib; sourceTree = "<group>"; };
@@ -70,14 +69,16 @@
 		C8E99AB4167D9347008CB6C0 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		C8E99AB7167D9347008CB6C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPhone.storyboard; sourceTree = "<group>"; };
 		C8E99ABA167D9347008CB6C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard_iPad.storyboard; sourceTree = "<group>"; };
-		C8E99ABC167D9347008CB6C0 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		C8E99ABD167D9347008CB6C0 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		C8E99AC4167D9348008CB6C0 /* JamSeshTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JamSeshTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8E99AC5167D9348008CB6C0 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		C8E99ACD167D9348008CB6C0 /* JamSeshTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JamSeshTests-Info.plist"; sourceTree = "<group>"; };
 		C8E99ACF167D9348008CB6C0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C8E99AD1167D9348008CB6C0 /* JamSeshTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JamSeshTests.h; sourceTree = "<group>"; };
 		C8E99AD2167D9348008CB6C0 /* JamSeshTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JamSeshTests.m; sourceTree = "<group>"; };
+		FC09CF84167E42AF00624B72 /* TrackModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrackModel.xcdatamodel; sourceTree = "<group>"; };
+		FC09CFDC167E4A0900624B72 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		FC09CFE1167E693700624B72 /* RecordedTrackCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordedTrackCell.h; sourceTree = "<group>"; };
+		FC09CFE2167E693700624B72 /* RecordedTrackCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordedTrackCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC09CFDD167E4A0900624B72 /* CoreData.framework in Frameworks */,
 				C8BDB56C167D963900E73D07 /* AVFoundation.framework in Frameworks */,
 				C8E99A9F167D9346008CB6C0 /* UIKit.framework in Frameworks */,
 				C8E99AA1167D9346008CB6C0 /* Foundation.framework in Frameworks */,
@@ -119,6 +121,7 @@
 		C8E99A8F167D9346008CB6C0 = {
 			isa = PBXGroup;
 			children = (
+				FC09CFDC167E4A0900624B72 /* CoreData.framework */,
 				C8BDB56B167D963900E73D07 /* AVFoundation.framework */,
 				C8E99AA4167D9346008CB6C0 /* JamSesh */,
 				C8E99ACB167D9348008CB6C0 /* JamSeshTests */,
@@ -150,6 +153,7 @@
 		C8E99AA4167D9346008CB6C0 /* JamSesh */ = {
 			isa = PBXGroup;
 			children = (
+				FC09CF7E167E419C00624B72 /* Models */,
 				C8BDB56D167D96FA00E73D07 /* UI */,
 				C8BDB55F167D93F200E73D07 /* NewTrackView.h */,
 				C8BDB560167D93F200E73D07 /* NewTrackView.m */,
@@ -157,11 +161,9 @@
 				C8BDB563167D93F200E73D07 /* RecordViewController.m */,
 				C8E99AAD167D9346008CB6C0 /* AppDelegate.h */,
 				C8E99AAE167D9346008CB6C0 /* AppDelegate.m */,
-				C8E99ABC167D9347008CB6C0 /* ViewController.h */,
-				C8E99ABD167D9347008CB6C0 /* ViewController.m */,
 				C8E99AA5167D9346008CB6C0 /* Supporting Files */,
-				C8544915167DC3CF00332212 /* RecordedTrackView.h */,
-				C8544916167DC3CF00332212 /* RecordedTrackView.m */,
+				FC09CFE1167E693700624B72 /* RecordedTrackCell.h */,
+				FC09CFE2167E693700624B72 /* RecordedTrackCell.m */,
 			);
 			path = JamSesh;
 			sourceTree = "<group>";
@@ -197,6 +199,14 @@
 				C8E99ACE167D9348008CB6C0 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FC09CF7E167E419C00624B72 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FC09CF83167E42AF00624B72 /* TrackModel.xcdatamodeld */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -315,10 +325,10 @@
 			files = (
 				C8E99AAB167D9346008CB6C0 /* main.m in Sources */,
 				C8E99AAF167D9346008CB6C0 /* AppDelegate.m in Sources */,
-				C8E99ABE167D9347008CB6C0 /* ViewController.m in Sources */,
 				C8BDB564167D93F200E73D07 /* NewTrackView.m in Sources */,
 				C8BDB568167D93F200E73D07 /* RecordViewController.m in Sources */,
-				C8544917167DC3CF00332212 /* RecordedTrackView.m in Sources */,
+				FC09CF85167E42AF00624B72 /* TrackModel.xcdatamodeld in Sources */,
+				FC09CFE3167E693700624B72 /* RecordedTrackCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -517,6 +527,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		FC09CF83167E42AF00624B72 /* TrackModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				FC09CF84167E42AF00624B72 /* TrackModel.xcdatamodel */,
+			);
+			currentVersion = FC09CF84167E42AF00624B72 /* TrackModel.xcdatamodel */;
+			path = TrackModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = C8E99A91167D9346008CB6C0 /* Project object */;
 }
