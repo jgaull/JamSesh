@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C8544914167DC29D00332212 /* RecordedTrackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C8544913167DC29D00332212 /* RecordedTrackView.xib */; };
+		C8544917167DC3CF00332212 /* RecordedTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8544916167DC3CF00332212 /* RecordedTrackView.m */; };
 		C8BDB564167D93F200E73D07 /* NewTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8BDB560167D93F200E73D07 /* NewTrackView.m */; };
 		C8BDB565167D93F200E73D07 /* NewTrackView.m in Sources */ = {isa = PBXBuildFile; fileRef = C8BDB560167D93F200E73D07 /* NewTrackView.m */; };
 		C8BDB566167D93F200E73D07 /* NewTrackView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C8BDB561167D93F200E73D07 /* NewTrackView.xib */; };
@@ -44,6 +46,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C8544913167DC29D00332212 /* RecordedTrackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RecordedTrackView.xib; sourceTree = "<group>"; };
+		C8544915167DC3CF00332212 /* RecordedTrackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordedTrackView.h; sourceTree = "<group>"; };
+		C8544916167DC3CF00332212 /* RecordedTrackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordedTrackView.m; sourceTree = "<group>"; };
 		C8BDB55F167D93F200E73D07 /* NewTrackView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTrackView.h; sourceTree = "<group>"; };
 		C8BDB560167D93F200E73D07 /* NewTrackView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTrackView.m; sourceTree = "<group>"; };
 		C8BDB561167D93F200E73D07 /* NewTrackView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewTrackView.xib; sourceTree = "<group>"; };
@@ -103,7 +108,10 @@
 		C8BDB56D167D96FA00E73D07 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				C8E99AB6167D9347008CB6C0 /* MainStoryboard_iPhone.storyboard */,
+				C8E99AB9167D9347008CB6C0 /* MainStoryboard_iPad.storyboard */,
 				C8BDB561167D93F200E73D07 /* NewTrackView.xib */,
+				C8544913167DC29D00332212 /* RecordedTrackView.xib */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -149,11 +157,11 @@
 				C8BDB563167D93F200E73D07 /* RecordViewController.m */,
 				C8E99AAD167D9346008CB6C0 /* AppDelegate.h */,
 				C8E99AAE167D9346008CB6C0 /* AppDelegate.m */,
-				C8E99AB6167D9347008CB6C0 /* MainStoryboard_iPhone.storyboard */,
-				C8E99AB9167D9347008CB6C0 /* MainStoryboard_iPad.storyboard */,
 				C8E99ABC167D9347008CB6C0 /* ViewController.h */,
 				C8E99ABD167D9347008CB6C0 /* ViewController.m */,
 				C8E99AA5167D9346008CB6C0 /* Supporting Files */,
+				C8544915167DC3CF00332212 /* RecordedTrackView.h */,
+				C8544916167DC3CF00332212 /* RecordedTrackView.m */,
 			);
 			path = JamSesh;
 			sourceTree = "<group>";
@@ -269,6 +277,7 @@
 				C8E99AB8167D9347008CB6C0 /* MainStoryboard_iPhone.storyboard in Resources */,
 				C8E99ABB167D9347008CB6C0 /* MainStoryboard_iPad.storyboard in Resources */,
 				C8BDB566167D93F200E73D07 /* NewTrackView.xib in Resources */,
+				C8544914167DC29D00332212 /* RecordedTrackView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,6 +318,7 @@
 				C8E99ABE167D9347008CB6C0 /* ViewController.m in Sources */,
 				C8BDB564167D93F200E73D07 /* NewTrackView.m in Sources */,
 				C8BDB568167D93F200E73D07 /* RecordViewController.m in Sources */,
+				C8544917167DC3CF00332212 /* RecordedTrackView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

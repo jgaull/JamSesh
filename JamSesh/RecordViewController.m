@@ -8,6 +8,7 @@
 
 #import "RecordViewController.h"
 #import "NewTrackView.h"
+#import "RecordedTrackView.h"
 
 @interface RecordViewController ()
 
@@ -18,8 +19,8 @@
 @property (strong, nonatomic) NSMutableArray *audioTracks;
 @property (strong, nonatomic) NSMutableArray *audioPlayers;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
+@property (nonatomic) int completedTracks;
 
-@property (weak, nonatomic) UIButton *playButton;
 @property (weak, nonatomic) UIButton *recordButton;
 
 @end
@@ -52,6 +53,7 @@
     //create data and fill it up here. Will probably have to load tracks from storage.
     
     [self.tableView registerNib:[UINib nibWithNibName:@"NewTrackView" bundle:nil] forCellReuseIdentifier:@"NewTrackView"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"RecordedTrackView" bundle:nil] forCellReuseIdentifier:@"RecordedTrackView"];
     
     NSArray *dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     self.basePath = [dirPaths objectAtIndex:0];
@@ -94,25 +96,34 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell;
+    UIViewController *tempViewController;
     
     if (indexPath.row == self.audioTracks.count) {
         
         cell = [tableView dequeueReusableCellWithIdentifier:@"NewTrackView" forIndexPath:indexPath];
-        NewTrackView *theView = (NewTrackView *)cell;
+        NewTrackView *newTrack = (NewTrackView *)cell;
         
         if (cell == nil) {
-            UIViewController *tempViewController = [[UIViewController alloc] initWithNibName:@"NewTrackView" bundle:nil];
-            theView = (NewTrackView *)tempViewController.view;
-            cell = theView;
+            tempViewController = [[UIViewController alloc] initWithNibName:@"NewTrackView" bundle:nil];
+            newTrack = (NewTrackView *)tempViewController.view;
+            cell = newTrack;
             
         }
         
-        [theView.playButton addTarget:self action:@selector(onPlay:forEvent:) forControlEvents:UIControlEventTouchUpInside];
-        [theView.recordButton addTarget:self action:@selector(onRecord:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [newTrack.recordButton addTarget:self action:@selector(onRecord:forEvent:) forControlEvents:UIControlEventTouchUpInside];
         
-        self.playButton = theView.playButton;
-        self.recordButton = theView.recordButton;
+        self.recordButton = newTrack.recordButton;
         
+    }
+    else {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"RecordedTrackView" forIndexPath:indexPath];
+        RecordedTrackView *recordedTrack = (RecordedTrackView *)cell;
+        
+        if (cell == nil) {
+            tempViewController = [[UIViewController alloc] initWithNibName:@"RecordedTrackView" bundle:nil];
+            recordedTrack = (RecordedTrackView *)tempViewController.view;
+            cell = recordedTrack;
+        }
     }
     
     // Configure the cell...
@@ -130,11 +141,18 @@
 }
 
 - (void)onRecord:(id)sender forEvent:(UIEvent *)event {
-    [self recordAudio];
+    if (self.state == kIdle) {
+        [self recordAudio];
+    }
+    else if (self.state == kRecording) {
+        [self stop];
+    }
 }
 
 -(void) recordAudio
 {
+    [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
+    
     NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:[NSString stringWithFormat:@"track%d.caf", self.audioTracks.count]];
     NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
     
@@ -151,14 +169,14 @@
 
 -(void)stop
 {
-    self.playButton.titleLabel.text = @"Play";
-    
     if (self.state == kRecording)
     {
         [self.currentTrack stop];
         [self.audioTracks addObject:self.currentTrack];
         self.currentTrack = nil;
         [self stopPlayingAllRecordedTracks];
+        [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
+        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
         
         NSLog(@"stop recording!");
     }
@@ -175,8 +193,8 @@
 
 -(void) playAudio
 {
-    self.playButton.titleLabel.text = @"Pause";
     [self playAllRecordedTracks];
+    self.recordButton.enabled = NO;
     self.state = kPlaying;
     NSLog(@"playing@");
 }
@@ -252,7 +270,12 @@
 #pragma AVAudioPlayerDelegate
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    self.completedTracks++;
     
+    if (self.completedTracks == self.audioTracks.count) {
+        self.completedTracks = 0;
+        [self stop];
+    }
 }
 
 #pragma mark - Table view delegate

@@ -10,7 +10,6 @@
 
 @interface NewTrackView : UITableViewCell
 
-@property (strong, nonatomic) IBOutlet UIButton *playButton;
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
 
 @end
