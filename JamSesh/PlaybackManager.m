@@ -19,8 +19,6 @@
 
 @implementation PlaybackManager
 
-@synthesize playing = _playing;
-
 - (id)initWithTracks:(NSArray *)tracks {
     self = [super init];
     if (self) {
@@ -92,6 +90,12 @@
         if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
             [self.delegate playbackManagerDidFinishPlaying:self];
         }
+    }
+}
+
+- (void)setScrubberPosition:(double)scrubberPosition {
+    if (!self.playing) {
+        _scrubberPosition = scrubberPosition;
     }
 }
 

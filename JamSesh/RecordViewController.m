@@ -130,8 +130,11 @@
         
         recordedTrack.trackLabel.text = [data valueForKey:@"name"];
         recordedTrack.muteSwitch.on = ![[data valueForKey:@"muted"] boolValue];
+        recordedTrack.volumeSlider.value = [[data valueForKey:@"volume"] floatValue];
         recordedTrack.muteSwitch.tag = indexPath.row;
+        recordedTrack.volumeSlider.tag = indexPath.row;
         [recordedTrack.muteSwitch addTarget:self action:@selector(onMute:forEvent:) forControlEvents:UIControlEventValueChanged];
+        [recordedTrack.volumeSlider addTarget:self action:@selector(onAdjustVolume:forEvent:) forControlEvents:UIControlEventValueChanged];
     }
     
     return cell;
@@ -167,6 +170,16 @@
     }
 }
 
+- (void)onAdjustVolume:(UISlider *)sender forEvent:(UIEvent *)event {
+    NSManagedObject *data = [self.recordedTracksData objectAtIndex:sender.tag];
+    [data setValue:[NSNumber numberWithFloat:sender.value] forKey:@"volume"];
+    NSError *error = nil;
+    
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Oops. Error saving your muting of the track duder: %@", [error localizedDescription]);
+    }
+}
+
 
 #pragma mark - the magic
 
@@ -181,6 +194,7 @@
 {
     if (self.state == kRecording)
     {
+        double duration = self.currentTrack.currentTime;
         [self.currentTrack stop];
         [self.playbackManager stop];
         [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
@@ -191,6 +205,7 @@
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"name"];
         [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"id"];
+        [trackModel setValue:[NSNumber numberWithDouble:duration] forKey:@"duration"];
         NSError *error = nil;
         
         if (![context save:&error]) {
