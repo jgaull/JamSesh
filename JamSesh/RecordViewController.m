@@ -9,6 +9,7 @@
 #import "RecordViewController.h"
 #import "NewTrackView.h"
 #import "RecordedTrackCell.h"
+#import "PlaybackManager.h"
 
 @interface RecordViewController ()
 
@@ -16,11 +17,8 @@
 
 @property (strong, nonatomic) NSDictionary *recordSettings;
 @property (strong, nonatomic) NSString *basePath;
-@property (strong, nonatomic) NSMutableArray *audioPlayers;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
-
-@property (nonatomic) int numCompletedTracks;
-@property (nonatomic) int numUnmutedTracks;
+@property (strong, nonatomic) PlaybackManager *playbackManager;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
 
@@ -34,15 +32,6 @@
 @end
 
 @implementation RecordViewController
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        
-    }
-    return self;
-}
 
 - (void)viewDidLoad
 {
@@ -61,10 +50,7 @@
     NSError *error = nil;
     NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     self.recordedTracksData = [[NSMutableArray alloc] initWithArray:fetchedObjects];
-    
-    for (NSManagedObject *trackData in self.recordedTracksData) {
-        [self addTrack:trackData];
-    }
+    self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData];
     
     //register the table views that we'll be using.
     [self.tableView registerNib:[UINib nibWithNibName:@"NewTrackView" bundle:nil] forCellReuseIdentifier:@"NewTrackView"];
@@ -179,13 +165,6 @@
     if (![self.managedObjectContext save:&error]) {
         NSLog(@"Oops. Error saving your muting of the track duder: %@", [error localizedDescription]);
     }
-    
-    if (!sender.on) {
-        self.numUnmutedTracks--;
-    }
-    else {
-        self.numUnmutedTracks++;
-    }
 }
 
 
@@ -195,7 +174,6 @@
 {
     [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
     [self.currentTrack record];
-    //[self playAllRecordedTracks];
     self.state = kRecording;
 }
 
@@ -204,7 +182,7 @@
     if (self.state == kRecording)
     {
         [self.currentTrack stop];
-        [self stopPlayingAllRecordedTracks];
+        [self.playbackManager stop];
         [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
         
         //write the info about the new track to the database
@@ -220,13 +198,13 @@
         }
         
         [self.recordedTracksData addObject:trackModel];
-        [self addTrack:trackModel];
+        [self.playbackManager addTrack:trackModel];
         [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
         [self readyRecordingTrack];
     }
     else if (self.state == kPlaying)
     {
-        [self stopPlayingAllRecordedTracks];
+        [self.playbackManager stop];
         self.recordButton.enabled = YES;
         [self.playButton setTitle:@"Play" forState:UIControlStateNormal];
     }
@@ -236,57 +214,10 @@
 
 -(void)playAudio
 {
-    if (self.numUnmutedTracks > 0) {
-        self.recordButton.enabled = NO;
-        [self.playButton setTitle:@"Stop" forState:UIControlStateNormal];
-        [self playAllRecordedTracks];
-        self.state = kPlaying;
-    }
-}
-
-- (void)playAllRecordedTracks
-{
-    for (int i = 0; i < self.audioPlayers.count; i++) {
-        NSManagedObject *data = [self.recordedTracksData objectAtIndex:i];
-        AVAudioPlayer *player = [self.audioPlayers objectAtIndex:i];
-        BOOL muted = [[data valueForKey:@"muted"] boolValue];
-        
-        if (!muted) {
-            [player play];
-        }
-    }
-}
-
-- (void)stopPlayingAllRecordedTracks
-{
-    for (AVAudioPlayer *player in self.audioPlayers) {
-        [player stop];
-        player.currentTime = 0;
-    }
-}
-
-- (void)addTrack:(NSManagedObject *)trackData {
-    if (self.audioPlayers == nil) {
-        self.audioPlayers = [[NSMutableArray alloc] init];
-    }
-    
-    NSError *error = nil;
-    NSURL *trackUrl = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
-    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:trackUrl error:&error];
-    
-    if (error) {
-        NSLog(@"Error loading audio player: %@", [error localizedDescription]);
-    }
-    else
-    {
-        player.delegate = self;
-        [player prepareToPlay];
-        [self.audioPlayers addObject:player];
-        
-        if (![[trackData valueForKey:@"muted"] boolValue]) {
-            self.numUnmutedTracks++;
-        }
-    }
+    self.recordButton.enabled = NO;
+    [self.playButton setTitle:@"Stop" forState:UIControlStateNormal];
+    [self.playbackManager play];
+    self.state = kPlaying;
 }
 
 - (void)readyRecordingTrack {
@@ -342,17 +273,6 @@
     return YES;
 }
 */
-
-#pragma AVAudioPlayerDelegate
-
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    self.numCompletedTracks++;
-    
-    if (self.numCompletedTracks == self.numUnmutedTracks) {
-        self.numCompletedTracks = 0;
-        [self stop];
-    }
-}
 
 #pragma mark - Table view delegate
 

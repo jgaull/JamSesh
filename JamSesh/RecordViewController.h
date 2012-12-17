@@ -15,10 +15,8 @@ static const int kPlaying = 1;
 static const int kRecording = 2;
 static const int kOther = 3;
 
-@interface RecordViewController : UITableViewController <AVAudioPlayerDelegate, AVAudioRecorderDelegate>
+@interface RecordViewController : UITableViewController < AVAudioRecorderDelegate>
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag;
 
 @end

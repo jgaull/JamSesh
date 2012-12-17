@@ -10,60 +10,89 @@
 
 @interface PlaybackManager ()
 
-@property (strong, nonatomic) NSMutableDictionary *song;
+@property (strong, nonatomic) NSMutableArray *song;
+@property (strong, nonatomic) NSMutableArray *players;
+
+@property (nonatomic) int numCompletedPlayers;
 
 @end
 
 @implementation PlaybackManager
 
-- (id)initWithTracks:(NSMutableArray *)tracks {
+@synthesize playing = _playing;
+
+- (id)initWithTracks:(NSArray *)tracks {
     self = [super init];
     if (self) {
-        for (NSManagedObject *track in tracks) {
-            [self addTrack:track];
-        }
+        self.song = [[NSMutableArray alloc] initWithArray:tracks];
+        _playing = NO;
     }
     
     return self;
 }
 
 - (void)addTrack:(NSManagedObject *)track {
-//        if (self.song == nil) {
-//            self.song = [[NSMutableDictionary alloc] init];
-//        }
-//        
-//        NSError *error = nil;
-//        NSURL *trackUrl = [NSURL fileURLWithPath:[track valueForKey:@"fileURL"]];
-//        AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:trackUrl error:&error];
-//        
-//        if (error) {
-//            NSLog(@"Error loading audio player: %@", [error localizedDescription]);
-//        }
-//        else {
-//            player.delegate = self;
-//            [self.song setObject:player forKey:track];
-//            
-//            if (![[trackData valueForKey:@"muted"] boolValue]) {
-//                self.numUnmutedTracks++;
-//            }
-//        }
-//    }
+    if (![self.song containsObject:track]) {
+        [self.song addObject:track];
+    }
 }
 
-- (void)muteTrack:(NSString *)track {
-    
+- (void)removeTrack:(NSManagedObject *)track {
+    if ([self.song containsObject:track]) {
+        [self.song removeObject:track];
+    }
 }
 
 - (void)play {
+    if (self.players == nil) {
+        self.players = [[NSMutableArray alloc] init];
+    }
     
+    for (NSManagedObject *trackData in self.song) {
+        if (![[trackData valueForKey:@"muted"] boolValue]) {
+            NSURL *url = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
+            NSError *error = nil;
+            AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL: url error:&error];
+            
+            if (error) {
+                NSLog(@"Error loading player track: %@", [error localizedDescription]);
+            }
+            else {
+                player.volume = [[trackData valueForKey:@"volume"] floatValue];
+                player.delegate = self;
+                [player play];
+                [self.players addObject:player];
+            }
+        }
+    }
+    
+    if (self.players.count > 0) {
+        _playing = YES;
+        self.numCompletedPlayers = 0;
+    }
 }
 
 - (void)stop {
-    
+    if (_playing) {
+        for (AVAudioPlayer *player in self.players) {
+            [player stop];
+            player.delegate = nil;
+        }
+        
+        self.players = nil;
+        
+        _playing = NO;
+    }
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    self.numCompletedPlayers++;
     
+    if (self.numCompletedPlayers == self.players.count) {
+        if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
+            [self.delegate playbackManagerDidFinishPlaying:self];
+        }
+    }
 }
 
 @end

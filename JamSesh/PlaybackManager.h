@@ -10,14 +10,25 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreData/CoreData.h>
 
+@protocol PlaybackManagerDelegate;
+
 @interface PlaybackManager : NSObject <AVAudioPlayerDelegate>
 
-- (id)initWithTracks:(NSMutableArray *)tracks;
+@property (nonatomic, readonly) BOOL playing;
+@property (nonatomic, weak) id <PlaybackManagerDelegate> delegate;
+
+- (id)initWithTracks:(NSArray *)tracks;
 - (void)addTrack:(NSManagedObject *)track;
-- (void)muteTrack:(NSString *)name;
 - (void)play;
 - (void)stop;
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag;
+
+@end
+
+@protocol PlaybackManagerDelegate <NSObject>
+@optional
+
+- (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
 
 @end
