@@ -86,6 +86,7 @@
     
     //some things that need to be set before the magic happens.
     self.state = kIdle;
+    [self readyRecordingTrack];
 }
 
 - (void)didReceiveMemoryWarning
@@ -193,16 +194,8 @@
 -(void)recordAudio
 {
     [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
-    
-    NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:[NSString stringWithFormat:@"track%d.caf", self.recordedTracksData.count]];
-    NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
-    
-    NSError *error = nil;
-    self.currentTrack = [[AVAudioRecorder alloc] initWithURL:soundFileURL settings:self.recordSettings error:&error];
     [self.currentTrack record];
-    
-    [self playAllRecordedTracks];
-    
+    //[self playAllRecordedTracks];
     self.state = kRecording;
 }
 
@@ -219,6 +212,7 @@
         NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"name"];
+        [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"id"];
         NSError *error = nil;
         
         if (![context save:&error]) {
@@ -228,7 +222,7 @@
         [self.recordedTracksData addObject:trackModel];
         [self addTrack:trackModel];
         [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
-        self.currentTrack = nil;
+        [self readyRecordingTrack];
     }
     else if (self.state == kPlaying)
     {
@@ -267,6 +261,7 @@
 {
     for (AVAudioPlayer *player in self.audioPlayers) {
         [player stop];
+        player.currentTime = 0;
     }
 }
 
@@ -291,6 +286,21 @@
         if (![[trackData valueForKey:@"muted"] boolValue]) {
             self.numUnmutedTracks++;
         }
+    }
+}
+
+- (void)readyRecordingTrack {
+    NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:[NSString stringWithFormat:@"track%d.caf", self.recordedTracksData.count]];
+    NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
+    
+    NSError *error = nil;
+    self.currentTrack = [[AVAudioRecorder alloc] initWithURL:soundFileURL settings:self.recordSettings error:&error];
+    
+    if (error) {
+        NSLog(@"Error creating recorder: %@", [error localizedDescription]);
+    }
+    else {
+        [self.currentTrack prepareToRecord];
     }
 }
 

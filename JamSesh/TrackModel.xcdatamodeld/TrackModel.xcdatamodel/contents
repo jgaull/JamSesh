@@ -3,11 +3,12 @@
     <entity name="TrackModel" syncable="YES">
         <attribute name="fileURL" attributeType="String" syncable="YES"/>
         <attribute name="gain" optional="YES" attributeType="Integer 32" defaultValueString="1" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="inPoint" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="muted" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="TrackModel" positionX="-585" positionY="-639" width="218" height="118"/>
+        <element name="TrackModel" positionX="-585" positionY="-639" width="218" height="133"/>
     </elements>
 </model>
