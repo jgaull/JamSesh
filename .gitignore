@@ -17,8 +17,8 @@ profile
 DerivedData
 .idea/
 
-JamSesh.xcodeproj/project.xcworkspace/xcuserdata/jonathangaull.xcuserdatad/UserInterfaceState.xcuserstate
-
 *.xcuserstate
+
+*.xcbkptlist
 
 *.xcbkptlist
