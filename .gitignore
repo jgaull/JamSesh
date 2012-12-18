@@ -16,3 +16,7 @@ profile
 *.moved-aside
 DerivedData
 .idea/
+
+JamSesh.xcodeproj/project.xcworkspace/xcuserdata/jonathangaull.xcuserdatad/UserInterfaceState.xcuserstate
+
+*.xcuserstate

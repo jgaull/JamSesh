@@ -24,6 +24,8 @@
 
 @property (weak, nonatomic) UIButton *recordButton;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UISlider *scrubberBar;
 
 @end
 
@@ -181,6 +183,8 @@
     }
 }
 
+- (IBAction)scrubberBar:(id)sender {
+}
 
 #pragma mark - the magic
 
