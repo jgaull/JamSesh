@@ -68,6 +68,9 @@
         _playing = YES;
         self.numCompletedPlayers = 0;
     }
+    else {
+        [self endPlayback];
+    }
 }
 
 - (void)stop {
@@ -87,9 +90,16 @@
     self.numCompletedPlayers++;
     
     if (self.numCompletedPlayers == self.players.count) {
-        if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
-            [self.delegate playbackManagerDidFinishPlaying:self];
-        }
+        [self endPlayback];
+    }
+}
+
+- (void)endPlayback {
+    
+    self.players = nil;
+    
+    if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
+        [self.delegate playbackManagerDidFinishPlaying:self];
     }
 }
 
