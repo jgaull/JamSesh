@@ -14,9 +14,6 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="7H7-zC-imG">
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="222" id="Iyx-Wf-38O"/>
-                                </constraints>
                                 <connections>
                                     <outlet property="dataSource" destination="Hxn-tq-0Bn" id="rP5-JD-lfM"/>
                                     <outlet property="delegate" destination="Hxn-tq-0Bn" id="ox8-gg-RFC"/>
@@ -30,12 +27,13 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="pjx-Sl-ZP6" firstAttribute="leading" secondItem="ndV-H1-I5u" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="4Dj-ZA-5Qt"/>
+                            <constraint firstItem="pjx-Sl-ZP6" firstAttribute="trailing" secondItem="ndV-H1-I5u" secondAttribute="trailing" type="default" id="Cax-4E-N1I"/>
+                            <constraint firstItem="pjx-Sl-ZP6" firstAttribute="leading" secondItem="ndV-H1-I5u" secondAttribute="leading" type="default" id="Egk-Tk-k8D"/>
+                            <constraint firstItem="pjx-Sl-ZP6" firstAttribute="top" secondItem="ndV-H1-I5u" secondAttribute="top" type="default" id="M5O-Af-iLP"/>
                             <constraint firstItem="7H7-zC-imG" firstAttribute="bottom" secondItem="ndV-H1-I5u" secondAttribute="bottom" type="default" id="NsJ-41-4Gh"/>
-                            <constraint firstAttribute="trailing" secondItem="pjx-Sl-ZP6" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="WBI-Jh-DVx"/>
+                            <constraint firstItem="7H7-zC-imG" firstAttribute="top" secondItem="ndV-H1-I5u" secondAttribute="top" constant="20" symbolic="YES" type="default" id="pAS-Wq-lGh"/>
                             <constraint firstItem="7H7-zC-imG" firstAttribute="trailing" secondItem="ndV-H1-I5u" secondAttribute="trailing" type="default" id="qiV-VR-hFo"/>
                             <constraint firstItem="7H7-zC-imG" firstAttribute="leading" secondItem="ndV-H1-I5u" secondAttribute="leading" type="default" id="xQa-lQ-G4L"/>
-                            <constraint firstItem="7H7-zC-imG" firstAttribute="top" secondItem="pjx-Sl-ZP6" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="xnc-Ij-cv5"/>
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
@@ -52,10 +50,14 @@
                             <state key="highlighted">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
+                            <connections>
+                                <action selector="onPlay:" destination="Hxn-tq-0Bn" eventType="touchUpInside" id="hVw-tY-YoY"/>
+                            </connections>
                         </button>
                     </navigationItem>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
+                        <outlet property="playButton" destination="Mv1-fF-M07" id="qUN-aJ-Kld"/>
                         <outlet property="scrubberBar" destination="pjx-Sl-ZP6" id="LuU-kJ-ke9"/>
                         <outlet property="tableView" destination="7H7-zC-imG" id="Jfq-5b-p19"/>
                     </connections>

@@ -21,6 +21,7 @@ static const int kOther = 3;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;

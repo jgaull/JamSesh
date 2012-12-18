@@ -18,6 +18,7 @@
 @property (strong, nonatomic) NSDictionary *recordSettings;
 @property (strong, nonatomic) NSString *basePath;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
+@property (nonatomic) float currentTrackInTime;
 @property (strong, nonatomic) PlaybackManager *playbackManager;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
@@ -76,6 +77,10 @@
     //some things that need to be set before the magic happens.
     self.state = kIdle;
     [self readyRecordingTrack];
+    
+    //set up some UI
+    self.scrubberBar.maximumValue = 1;
+    self.scrubberBar.value = self.playbackManager.scrubberPosition;
 }
 
 - (void)didReceiveMemoryWarning
@@ -184,6 +189,7 @@
 }
 
 - (IBAction)scrubberBar:(id)sender {
+    self.playbackManager.scrubberPosition = self.playbackManager.songLength * self.scrubberBar.value;
 }
 
 #pragma mark - the magic
@@ -192,6 +198,7 @@
 {
     [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
     [self.currentTrack record];
+    self.currentTrackInTime = self.playbackManager.scrubberPosition;
     self.state = kRecording;
 }
 
@@ -211,6 +218,7 @@
         [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"name"];
         [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"id"];
         [trackModel setValue:[NSNumber numberWithDouble:duration] forKey:@"duration"];
+        [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
         NSError *error = nil;
         
         if (![context save:&error]) {
@@ -260,6 +268,13 @@
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
     [self stop];
+}
+
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager {
+    float targetValue = self.playbackManager.scrubberPosition / self.playbackManager.songLength;
+    if (self.scrubberBar.value != targetValue) {
+        self.scrubberBar.value = targetValue;
+    }
 }
 
 /*
