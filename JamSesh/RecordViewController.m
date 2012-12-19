@@ -25,7 +25,6 @@
 
 @property (weak, nonatomic) UIButton *recordButton;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
-@property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) IBOutlet UISlider *scrubberBar;
 
 @end
@@ -44,6 +43,7 @@
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    self.editButtonItem.action = @selector(onEdit);
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     //create data and fill it up here. Will probably have to load tracks from storage.
@@ -192,6 +192,10 @@
     self.playbackManager.scrubberPosition = self.playbackManager.songLength * self.scrubberBar.value;
 }
 
+- (void)onEdit {
+    [self.tableView setEditing:!self.tableView.editing animated:YES];
+}
+
 #pragma mark - the magic
 
 -(void)recordAudio
@@ -277,28 +281,45 @@
     }
 }
 
-/*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the specified item to be editable.
-    return YES;
+    if (indexPath.row != self.recordedTracksData.count) {
+        return YES;
+    }
+    
+    return NO;
 }
-*/
 
-/*
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
+        NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:indexPath.row];
+        NSURL *fileUrl = [NSURL URLWithString:[trackData valueForKey:@"fileURL"]];
+        [self.managedObjectContext deleteObject:trackData];
+        [self.recordedTracksData removeObject:trackData];
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
+        
+        if (error) {
+            NSLog(@"Error deleting file: %@", [error localizedDescription]);
+        }
+        
+        
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
 
 /*
 // Override to support rearranging the table view.
