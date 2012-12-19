@@ -21,6 +21,7 @@
 
 - (id)initWithTracks:(NSArray *)tracks;
 - (void)addTrack:(NSManagedObject *)track;
+- (void)removeTrack:(NSManagedObject *)track;
 - (void)play;
 - (void)stop;
 

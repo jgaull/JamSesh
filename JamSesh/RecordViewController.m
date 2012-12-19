@@ -303,14 +303,27 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:indexPath.row];
-        NSURL *fileUrl = [NSURL URLWithString:[trackData valueForKey:@"fileURL"]];
-        [self.managedObjectContext deleteObject:trackData];
+        NSURL *fileUrl = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
         [self.recordedTracksData removeObject:trackData];
+        [self.playbackManager removeTrack:trackData];
+        [self.managedObjectContext deleteObject:trackData];
+        
         NSError *error = nil;
         [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
         
         if (error) {
             NSLog(@"Error deleting file: %@", [error localizedDescription]);
+            
+            if ([[NSFileManager defaultManager] isReadableFileAtPath:fileUrl.path]) {
+                [self.managedObjectContext undo];
+            }
+        }
+        else {
+            [self.managedObjectContext save:&error];
+            
+            if (error) {
+                NSLog(@"Error deleting managed object for track: %@", [error localizedDescription]);
+            }
         }
         
         
