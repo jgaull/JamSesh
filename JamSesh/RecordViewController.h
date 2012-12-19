@@ -19,8 +19,11 @@ static const int kOther = 3;
 @interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
 
-//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
 - (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
