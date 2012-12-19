@@ -18,12 +18,15 @@
 @property (strong, nonatomic) NSDictionary *recordSettings;
 @property (strong, nonatomic) NSString *basePath;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
+@property (nonatomic) float currentTrackInTime;
 @property (strong, nonatomic) PlaybackManager *playbackManager;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
 
 @property (weak, nonatomic) UIButton *recordButton;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) IBOutlet UISlider *scrubberBar;
 
 @end
 
@@ -51,6 +54,7 @@
     NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     self.recordedTracksData = [[NSMutableArray alloc] initWithArray:fetchedObjects];
     self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData];
+    self.playbackManager.delegate = self;
     
     //register the table views that we'll be using.
     [self.tableView registerNib:[UINib nibWithNibName:@"NewTrackView" bundle:nil] forCellReuseIdentifier:@"NewTrackView"];
@@ -73,6 +77,10 @@
     //some things that need to be set before the magic happens.
     self.state = kIdle;
     [self readyRecordingTrack];
+    
+    //set up some UI
+    self.scrubberBar.maximumValue = 1;
+    self.scrubberBar.value = self.playbackManager.scrubberPosition;
 }
 
 - (void)didReceiveMemoryWarning
@@ -180,6 +188,9 @@
     }
 }
 
+- (IBAction)scrubberBar:(id)sender {
+    self.playbackManager.scrubberPosition = self.playbackManager.songLength * self.scrubberBar.value;
+}
 
 #pragma mark - the magic
 
@@ -187,6 +198,7 @@
 {
     [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
     [self.currentTrack record];
+    self.currentTrackInTime = self.playbackManager.scrubberPosition;
     self.state = kRecording;
 }
 
@@ -203,9 +215,10 @@
         NSManagedObjectContext *context = self.managedObjectContext;
         NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
-        [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"name"];
+        [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"name"];
         [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"id"];
         [trackModel setValue:[NSNumber numberWithDouble:duration] forKey:@"duration"];
+        [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
         NSError *error = nil;
         
         if (![context save:&error]) {
@@ -214,12 +227,15 @@
         
         [self.recordedTracksData addObject:trackModel];
         [self.playbackManager addTrack:trackModel];
-        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:0 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
         [self readyRecordingTrack];
     }
     else if (self.state == kPlaying)
     {
-        [self.playbackManager stop];
+        if (self.playbackManager.playing) {
+            [self.playbackManager stop];
+        }
+        
         self.recordButton.enabled = YES;
         [self.playButton setTitle:@"Play" forState:UIControlStateNormal];
     }
@@ -231,8 +247,8 @@
 {
     self.recordButton.enabled = NO;
     [self.playButton setTitle:@"Stop" forState:UIControlStateNormal];
-    [self.playbackManager play];
     self.state = kPlaying;
+    [self.playbackManager play];
 }
 
 - (void)readyRecordingTrack {
@@ -247,6 +263,17 @@
     }
     else {
         [self.currentTrack prepareToRecord];
+    }
+}
+
+- (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
+    [self stop];
+}
+
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager {
+    float targetValue = self.playbackManager.scrubberPosition / self.playbackManager.songLength;
+    if (self.scrubberBar.value != targetValue) {
+        self.scrubberBar.value = targetValue;
     }
 }
 

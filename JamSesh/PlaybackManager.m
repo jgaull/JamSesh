@@ -14,6 +14,7 @@
 @property (strong, nonatomic) NSMutableArray *players;
 
 @property (nonatomic) int numCompletedPlayers;
+@property (nonatomic) float songLength;
 
 @end
 
@@ -23,7 +24,9 @@
     self = [super init];
     if (self) {
         self.song = [[NSMutableArray alloc] initWithArray:tracks];
+        [self reCalculateSongLength];
         _playing = NO;
+        _scrubberPosition = 0;
     }
     
     return self;
@@ -32,12 +35,14 @@
 - (void)addTrack:(NSManagedObject *)track {
     if (![self.song containsObject:track]) {
         [self.song addObject:track];
+        [self reCalculateSongLength];
     }
 }
 
 - (void)removeTrack:(NSManagedObject *)track {
     if ([self.song containsObject:track]) {
         [self.song removeObject:track];
+        [self reCalculateSongLength];
     }
 }
 
@@ -56,10 +61,22 @@
                 NSLog(@"Error loading player track: %@", [error localizedDescription]);
             }
             else {
-                player.volume = [[trackData valueForKey:@"volume"] floatValue];
-                player.delegate = self;
-                [player play];
-                [self.players addObject:player];
+                float startDelay = [[trackData valueForKey:@"inPoint"] floatValue] - self.scrubberPosition;
+                
+                if (startDelay > 0 || ABS(startDelay) < [[trackData valueForKey:@"duration"] floatValue]) {
+                    player.volume = [[trackData valueForKey:@"volume"] floatValue];
+                    player.delegate = self;
+                    
+                    if (startDelay <= 0) {
+                        player.currentTime = ABS(startDelay);
+                        [player play];
+                    }
+                    else {
+                        [player playAtTime:player.deviceCurrentTime + startDelay];
+                    }
+                    
+                    [self.players addObject:player];
+                }
             }
         }
     }
@@ -67,6 +84,10 @@
     if (self.players.count > 0) {
         _playing = YES;
         self.numCompletedPlayers = 0;
+        [self updateScrubberPositionDuringPlayback];
+    }
+    else {
+        [self endPlayback];
     }
 }
 
@@ -74,12 +95,9 @@
     if (_playing) {
         for (AVAudioPlayer *player in self.players) {
             [player stop];
-            player.delegate = nil;
         }
         
-        self.players = nil;
-        
-        _playing = NO;
+        [self endPlayback];
     }
 }
 
@@ -87,16 +105,53 @@
     self.numCompletedPlayers++;
     
     if (self.numCompletedPlayers == self.players.count) {
-        if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
-            [self.delegate playbackManagerDidFinishPlaying:self];
-        }
+        [self endPlayback];
     }
+}
+
+- (void)endPlayback {
+    
+    self.players = nil;
+    _playing = NO;
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateScrubberPositionDuringPlayback) object:nil];
+    
+    if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
+        [self.delegate playbackManagerDidFinishPlaying:self];
+    }
+}
+
+- (void)reCalculateSongLength {
+    float length = 0;
+    for (NSManagedObject *trackData in self.song) {
+        length = MAX([[trackData valueForKey:@"inPoint"] floatValue] + [[trackData valueForKey:@"duration"] floatValue], length);
+    }
+    
+    self.songLength = length;
 }
 
 - (void)setScrubberPosition:(double)scrubberPosition {
     if (!self.playing) {
         _scrubberPosition = scrubberPosition;
+        
+        if ([self.delegate respondsToSelector:@selector(playbackManagerScrubberDidMove:)]) {
+            [self.delegate playbackManagerScrubberDidMove:self];
+        }
     }
+}
+
+- (void)updateScrubberPositionDuringPlayback {
+    static float updateFrequency = 0.03;
+    _scrubberPosition += updateFrequency;
+    
+    if ([self.delegate respondsToSelector:@selector(playbackManagerScrubberDidMove:)]) {
+        [self.delegate playbackManagerScrubberDidMove:self];
+    }
+    
+    [self performSelector:@selector(updateScrubberPositionDuringPlayback) withObject:nil afterDelay:updateFrequency];
+}
+
+- (float)songLength {
+    return _songLength;
 }
 
 @end

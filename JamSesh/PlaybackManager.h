@@ -17,6 +17,7 @@
 @property (nonatomic, readonly) BOOL playing;
 @property (nonatomic, weak) id <PlaybackManagerDelegate> delegate;
 @property (nonatomic) double scrubberPosition;
+@property (nonatomic, readonly) float songLength;
 
 - (id)initWithTracks:(NSArray *)tracks;
 - (void)addTrack:(NSManagedObject *)track;
@@ -31,5 +32,6 @@
 @optional
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
 
 @end
