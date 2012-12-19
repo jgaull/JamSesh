@@ -19,4 +19,6 @@ static const int kOther = 3;
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
+
 @end
