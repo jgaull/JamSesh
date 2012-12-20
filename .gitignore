@@ -16,11 +16,4 @@ profile
 *.moved-aside
 DerivedData
 .idea/
-
-*.xcuserstate
-
-*.xcbkptlist
-
-*.xcbkptlist
-
-*.xcbkptlist
+*.xcuserdatad
