@@ -10,6 +10,7 @@
 #import "NewTrackView.h"
 #import "RecordedTrackCell.h"
 #import "PlaybackManager.h"
+#import "PlaybackControllsView.h"
 
 @interface RecordViewController ()
 
@@ -193,7 +194,18 @@
 }
 
 - (void)onEdit {
+    
     [self.tableView setEditing:!self.tableView.editing animated:YES];
+    
+    UIBarButtonItemStyle style = self.tableView.editing ? UIBarButtonItemStyleDone : UIBarButtonItemStylePlain;
+    NSString *title = self.tableView.editing ? @"Done" : @"Edit";
+    
+    self.navigationItem.rightBarButtonItem.style = style;
+    self.navigationItem.rightBarButtonItem.title = title;
+}
+
+- (IBAction)onSkipBack:(id)sender {
+    self.playbackManager.scrubberPosition = 0;
 }
 
 #pragma mark - the magic
@@ -241,7 +253,7 @@
         }
         
         self.recordButton.enabled = YES;
-        [self.playButton setTitle:@"Play" forState:UIControlStateNormal];
+        [self.playButton setTitle:@">" forState:UIControlStateNormal];
     }
     
     self.state = kIdle;
@@ -250,7 +262,7 @@
 -(void)playAudio
 {
     self.recordButton.enabled = NO;
-    [self.playButton setTitle:@"Stop" forState:UIControlStateNormal];
+    [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     self.state = kPlaying;
     [self.playbackManager play];
 }

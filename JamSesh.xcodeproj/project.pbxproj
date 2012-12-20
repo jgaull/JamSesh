@@ -35,6 +35,7 @@
 		FC09CFDD167E4A0900624B72 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC09CFDC167E4A0900624B72 /* CoreData.framework */; };
 		FC09CFE3167E693700624B72 /* RecordedTrackCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FC09CFE2167E693700624B72 /* RecordedTrackCell.m */; };
 		FC09CFE6167EAEF800624B72 /* PlaybackManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FC09CFE5167EAEF800624B72 /* PlaybackManager.m */; };
+		FC4306DE1682D2D800E3E66C /* PlaybackControllsView.m in Sources */ = {isa = PBXBuildFile; fileRef = FC4306DD1682D2D800E3E66C /* PlaybackControllsView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,8 @@
 		FC09CFE2167E693700624B72 /* RecordedTrackCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordedTrackCell.m; sourceTree = "<group>"; };
 		FC09CFE4167EAEF800624B72 /* PlaybackManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackManager.h; sourceTree = "<group>"; };
 		FC09CFE5167EAEF800624B72 /* PlaybackManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackManager.m; sourceTree = "<group>"; };
+		FC4306DC1682D2D800E3E66C /* PlaybackControllsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackControllsView.h; sourceTree = "<group>"; };
+		FC4306DD1682D2D800E3E66C /* PlaybackControllsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackControllsView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +172,8 @@
 				FC09CFE2167E693700624B72 /* RecordedTrackCell.m */,
 				FC09CFE4167EAEF800624B72 /* PlaybackManager.h */,
 				FC09CFE5167EAEF800624B72 /* PlaybackManager.m */,
+				FC4306DC1682D2D800E3E66C /* PlaybackControllsView.h */,
+				FC4306DD1682D2D800E3E66C /* PlaybackControllsView.m */,
 			);
 			path = JamSesh;
 			sourceTree = "<group>";
@@ -335,6 +340,7 @@
 				FC09CF85167E42AF00624B72 /* TrackModel.xcdatamodeld in Sources */,
 				FC09CFE3167E693700624B72 /* RecordedTrackCell.m in Sources */,
 				FC09CFE6167EAEF800624B72 /* PlaybackManager.m in Sources */,
+				FC4306DE1682D2D800E3E66C /* PlaybackControllsView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
