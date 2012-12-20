@@ -114,6 +114,7 @@
     self.players = nil;
     _playing = NO;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateScrubberPositionDuringPlayback) object:nil];
+    self.scrubberPosition = _songLength;
     
     if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
         [self.delegate playbackManagerDidFinishPlaying:self];
@@ -126,7 +127,7 @@
         length = MAX([[trackData valueForKey:@"inPoint"] floatValue] + [[trackData valueForKey:@"duration"] floatValue], length);
     }
     
-    self.songLength = length;
+    _songLength = length;
 }
 
 - (void)setScrubberPosition:(double)scrubberPosition {
