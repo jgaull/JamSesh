@@ -12,10 +12,10 @@
 
 @property (strong, nonatomic) NSMutableArray *song;
 @property (strong, nonatomic) NSMutableArray *players;
+@property (nonatomic) NSDate *startPlaybackTime;
 
-@property (nonatomic) int numCompletedPlayers;
 @property (nonatomic) float songLength;
-@property (nonatomic) float lastUpdateTime;
+@property (nonatomic) float playbackStartingLocation;
 
 @end
 
@@ -84,9 +84,9 @@
     
     if (self.players.count > 0) {
         _playing = YES;
-        self.numCompletedPlayers = 0;
-        self.lastUpdateTime = [self getDeviceTime];
-        [self updateScrubberPositionDuringPlayback];
+        self.startPlaybackTime = [NSDate date];
+        self.playbackStartingLocation = self.scrubberPosition;
+        [self scrubberUpdateLoopBegin];
     }
     else {
         [self endPlayback];
@@ -104,21 +104,20 @@
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    self.numCompletedPlayers++;
+    player.delegate = nil;
+    [self.players removeObject:player];
     
-    if (self.numCompletedPlayers == self.players.count) {
+    if (self.players.count == 0) {
         [self endPlayback];
+        self.scrubberPosition = self.songLength;
     }
 }
 
 - (void)endPlayback {
     _playing = NO;
-    if (self.players.count > 0) {
-        self.scrubberPosition = [self getDeviceTime] - self.lastUpdateTime;
-    }
-    
+    [self scrubberUpdateLoopEnd];
+    self.startPlaybackTime = nil;
     self.players = nil;
-    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateScrubberPositionDuringPlayback) object:nil];
     
     if ([self.delegate respondsToSelector:@selector(playbackManagerDidFinishPlaying:)]) {
         [self.delegate playbackManagerDidFinishPlaying:self];
@@ -146,23 +145,24 @@
     }
 }
 
-- (void)updateScrubberPositionDuringPlayback {
-    static float updateFrequency = 0.03;
-    AVAudioPlayer *aPlayer = [self.players objectAtIndex:0];
-    float timePassed = aPlayer.deviceCurrentTime - self.lastUpdateTime;
-    self.lastUpdateTime = aPlayer.deviceCurrentTime;
-    _scrubberPosition += timePassed;
+- (void)updateScrubberPosition {
+    NSTimeInterval timePassed = ABS([self.startPlaybackTime timeIntervalSinceNow]);
+    _scrubberPosition = timePassed + self.playbackStartingLocation;
     
     if ([self.delegate respondsToSelector:@selector(playbackManagerScrubberDidMove:)]) {
         [self.delegate playbackManagerScrubberDidMove:self];
     }
     
-    [self performSelector:@selector(updateScrubberPositionDuringPlayback) withObject:nil afterDelay:updateFrequency];
 }
 
-- (float)getDeviceTime {
-    AVAudioPlayer *player = [self.players objectAtIndex:0];
-    return player.deviceCurrentTime;
+- (void)scrubberUpdateLoopBegin {
+    static float updateFrequency = 0.03;
+    [self performSelector:@selector(scrubberUpdateLoopBegin) withObject:nil afterDelay:updateFrequency];
+    [self updateScrubberPosition];
+}
+
+- (void)scrubberUpdateLoopEnd {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(scrubberUpdateLoopBegin) object:nil];
 }
 
 - (float)songLength {

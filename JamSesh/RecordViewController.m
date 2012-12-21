@@ -152,20 +152,24 @@
 #pragma mark - Button Listeners
 
 - (void)onRecord:(id)sender forEvent:(UIEvent *)event {
-    if (self.state == kIdle) {
-        [self recordAudio];
-    }
-    else if (self.state == kRecording) {
-        [self stop];
+    if (!self.tableView.editing) {
+        if (self.state == kIdle) {
+            [self recordAudio];
+        }
+        else if (self.state == kRecording) {
+            [self stop];
+        }
     }
 }
 
 - (IBAction)onPlay:(id)sender {
-    if (self.state == kPlaying) {
-        [self stop];
-    }
-    else if (self.state == kIdle) {
-        [self playAudio];
+    if (!self.tableView.editing) {
+        if (self.state == kPlaying) {
+            [self stop];
+        }
+        else if (self.state == kIdle) {
+            [self playAudio];
+        }
     }
 }
 
@@ -194,7 +198,7 @@
 }
 
 - (void)onEdit {
-    
+    [self.playbackManager stop];
     [self.tableView setEditing:!self.tableView.editing animated:YES];
     
     UIBarButtonItemStyle style = self.tableView.editing ? UIBarButtonItemStyleDone : UIBarButtonItemStylePlain;
@@ -232,7 +236,6 @@
         NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
         [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"name"];
-        [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"id"];
         [trackModel setValue:[NSNumber numberWithDouble:duration] forKey:@"duration"];
         [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
         NSError *error = nil;
@@ -268,7 +271,10 @@
 }
 
 - (void)readyRecordingTrack {
-    NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:[NSString stringWithFormat:@"track%d.caf", self.recordedTracksData.count]];
+    int now = [[NSDate date] timeIntervalSince1970];
+    NSString *fileName = [NSString stringWithFormat:@"%d_%d.caf", now, arc4random() % 100000];
+    NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:fileName];
+    
     NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
     
     NSError *error = nil;
