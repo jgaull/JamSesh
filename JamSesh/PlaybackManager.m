@@ -13,6 +13,7 @@
 @property (strong, nonatomic) NSMutableArray *song;
 @property (strong, nonatomic) NSMutableArray *players;
 @property (nonatomic) NSDate *startPlaybackTime;
+@property (weak, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 @property (nonatomic) float songLength;
 @property (nonatomic) float playbackStartingLocation;
@@ -21,13 +22,18 @@
 
 @implementation PlaybackManager
 
-- (id)initWithTracks:(NSArray *)tracks {
+- (id)initWithTracks:(NSArray *)tracks andContext:(NSManagedObjectContext *)managedObjectContext {
     self = [super init];
     if (self) {
-        self.song = [[NSMutableArray alloc] initWithArray:tracks];
-        [self reCalculateSongLength];
+        //set up some vars used for running
+        _song = [[NSMutableArray alloc] initWithArray:tracks];
         _playing = NO;
         _scrubberPosition = 0;
+        self.managedObjectContext = managedObjectContext;
+        
+        //do some other important stuff
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onTrackDataChanged:) name:NSManagedObjectContextObjectsDidChangeNotification object:self.managedObjectContext];
+        [self reCalculateSongLength];
     }
     
     return self;
@@ -82,14 +88,13 @@
         }
     }
     
-    if (self.players.count > 0) {
-        _playing = YES;
-        self.startPlaybackTime = [NSDate date];
-        self.playbackStartingLocation = self.scrubberPosition;
-        [self scrubberUpdateLoopBegin];
-    }
-    else {
-        [self endPlayback];
+    _playing = YES;
+    self.startPlaybackTime = [NSDate date];
+    self.playbackStartingLocation = self.scrubberPosition;
+    [self scrubberUpdateLoopBegin];
+    
+    if (self.players.count == 0) {
+        [self performSelector:@selector(forceFinish) withObject:nil afterDelay:self.songLength];
     }
 }
 
@@ -111,6 +116,11 @@
         [self endPlayback];
         self.scrubberPosition = self.songLength;
     }
+}
+
+- (void)forceFinish {
+    self.scrubberPosition = self.songLength;
+    [self endPlayback];
 }
 
 - (void)endPlayback {
@@ -163,6 +173,33 @@
 
 - (void)scrubberUpdateLoopEnd {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(scrubberUpdateLoopBegin) object:nil];
+}
+
+- (void)onTrackDataChanged:(NSNotification *)note {
+    NSSet *updatedObjects = [[note userInfo] objectForKey:NSUpdatedObjectsKey];
+    for (NSManagedObject *trackData in updatedObjects) {
+        AVAudioPlayer *player = [self getPlayerFromData:trackData];
+        
+        if ([[trackData valueForKey:@"muted"] boolValue]) {
+            player.volume = 0;
+        }
+        else {
+            player.volume = [[trackData valueForKey:@"volume"] floatValue];
+        }
+    }
+}
+
+- (AVAudioPlayer *)getPlayerFromData:(NSManagedObject *)trackData {
+    NSURL *fileURL = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
+    NSString *fileName = fileURL.lastPathComponent;
+    
+    for (AVAudioPlayer *player in self.players) {
+        if ([player.url.lastPathComponent isEqualToString:fileName]) {
+            return player;
+        }
+    }
+    
+    return nil;
 }
 
 - (float)songLength {

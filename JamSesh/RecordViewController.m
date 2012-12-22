@@ -54,7 +54,7 @@
     NSError *error = nil;
     NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     self.recordedTracksData = [[NSMutableArray alloc] initWithArray:fetchedObjects];
-    self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData];
+    self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData andContext:self.managedObjectContext];
     self.playbackManager.delegate = self;
     
     //register the table views that we'll be using.

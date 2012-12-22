@@ -19,7 +19,7 @@
 @property (nonatomic) float scrubberPosition;
 @property (nonatomic, readonly) float songLength;
 
-- (id)initWithTracks:(NSArray *)tracks;
+- (id)initWithTracks:(NSArray *)tracks andContext:(NSManagedObjectContext *)managedObjectContext;
 - (void)addTrack:(NSManagedObject *)track;
 - (void)removeTrack:(NSManagedObject *)track;
 - (void)play;
