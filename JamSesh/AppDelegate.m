@@ -9,6 +9,12 @@
 #import "AppDelegate.h"
 #import "RecordViewController.h"
 
+@interface AppDelegate ()
+
+@property (weak, nonatomic) RecordViewController *recordViewController;
+
+@end
+
 @implementation AppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
@@ -18,8 +24,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     UINavigationController *navigationController = (UINavigationController *)self.window.rootViewController;
-    RecordViewController *controller = (RecordViewController *)navigationController.topViewController;
-    controller.managedObjectContext = self.managedObjectContext;
+    self.recordViewController = (RecordViewController *)navigationController.topViewController;
+    self.recordViewController.managedObjectContext = self.managedObjectContext;
     
     return YES;
 }
@@ -28,6 +34,8 @@
 {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    [self.recordViewController appResignActive];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -44,6 +52,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [self.recordViewController appBecomeActive];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

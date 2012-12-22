@@ -14,7 +14,6 @@
 static const int kIdle = 0;
 static const int kPlaying = 1;
 static const int kRecording = 2;
-static const int kOther = 3;
 
 @interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -32,5 +31,7 @@ static const int kOther = 3;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+- (void)appResignActive;
+- (void)appBecomeActive;
 
 @end

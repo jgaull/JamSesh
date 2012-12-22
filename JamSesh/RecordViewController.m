@@ -90,6 +90,28 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)appResignActive {
+    switch (self.state) {
+        case kIdle:
+            [self.currentTrack deleteRecording];
+            self.currentTrack = nil;
+            break;
+            
+        case kRecording:
+        case kPlaying:
+            [self stop];
+            
+        default:
+            break;
+    }
+}
+
+- (void)appBecomeActive {
+    if (self.currentTrack == nil) {
+        [self readyRecordingTrack];
+    }
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -232,10 +254,16 @@
         [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
         
         //write the info about the new track to the database
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        dateFormatter.timeStyle = NSDateFormatterShortStyle;
+        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        NSString *trackName = [dateFormatter stringFromDate:[NSDate date]];
+        
         NSManagedObjectContext *context = self.managedObjectContext;
         NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
         [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
-        [trackModel setValue:self.currentTrack.url.filePathURL.lastPathComponent forKey:@"name"];
+        [trackModel setValue: trackName forKey:@"name"];
         [trackModel setValue:[NSNumber numberWithDouble:duration] forKey:@"duration"];
         [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
         NSError *error = nil;
@@ -243,11 +271,12 @@
         if (![context save:&error]) {
             NSLog(@"Coulnd't save track! %@", [error localizedDescription]);
         }
-        
-        [self.recordedTracksData addObject:trackModel];
-        [self.playbackManager addTrack:trackModel];
-        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
-        [self readyRecordingTrack];
+        else {
+            [self.recordedTracksData addObject:trackModel];
+            [self.playbackManager addTrack:trackModel];
+            [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
+            [self readyRecordingTrack];
+        }
     }
     else if (self.state == kPlaying)
     {
@@ -346,6 +375,9 @@
         
         
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        if (self.recordedTracksData.count == 0) {
+            [self onEdit];
+        }
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
