@@ -16,17 +16,20 @@
 
 @property (nonatomic) int state;
 
-@property (strong, nonatomic) NSDictionary *recordSettings;
 @property (strong, nonatomic) NSString *basePath;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
-@property (nonatomic) float currentTrackInTime;
 @property (strong, nonatomic) PlaybackManager *playbackManager;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
+@property (strong, nonatomic) NSDictionary *recordSettings;
 
-@property (weak, nonatomic) UIButton *recordButton;
 @property (strong, nonatomic) IBOutlet UIButton *playButton;
 @property (strong, nonatomic) IBOutlet UISlider *scrubberBar;
+
+@property (strong, nonatomic) NewTrackView *createNewTrackView;
+@property (strong, nonatomic) RecordedTrackCell *pendingSaveTrackCell;
+
+@property (nonatomic) float currentTrackInTime;
 
 @end
 
@@ -77,7 +80,6 @@
     
     //some things that need to be set before the magic happens.
     self.state = kIdle;
-    [self readyRecordingTrack];
     
     //set up some UI
     self.scrubberBar.maximumValue = 1;
@@ -96,79 +98,21 @@
             [self.currentTrack deleteRecording];
             self.currentTrack = nil;
             break;
-            
         case kRecording:
+            [self stopRecording];
+            break;
         case kPlaying:
-            [self stop];
-            
+            [self stopPlaying];
+            break;
+        case kArmed:
+            [self disarm];
         default:
             break;
     }
 }
 
 - (void)appBecomeActive {
-    if (self.currentTrack == nil) {
-        [self readyRecordingTrack];
-    }
-}
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // Return the number of rows in the section.
-    return self.recordedTracksData.count + 1;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell;
-    UIViewController *tempViewController;
     
-    if (indexPath.row == self.recordedTracksData.count) {
-        
-        cell = [tableView dequeueReusableCellWithIdentifier:@"NewTrackView" forIndexPath:indexPath];
-        NewTrackView *newTrack = (NewTrackView *)cell;
-        
-        if (cell == nil) {
-            tempViewController = [[UIViewController alloc] initWithNibName:@"NewTrackView" bundle:nil];
-            newTrack = (NewTrackView *)tempViewController.view;
-            cell = newTrack;
-            
-        }
-        
-        [newTrack.recordButton addTarget:self action:@selector(onRecord:forEvent:) forControlEvents:UIControlEventTouchUpInside];
-        
-        self.recordButton = newTrack.recordButton;
-        
-    }
-    else {
-        NSManagedObject *data = [self.recordedTracksData objectAtIndex:indexPath.row];
-        
-        cell = [tableView dequeueReusableCellWithIdentifier:@"RecordedTrackView" forIndexPath:indexPath];
-        RecordedTrackCell *recordedTrack = (RecordedTrackCell *)cell;
-        
-        if (cell == nil) {
-            recordedTrack = (RecordedTrackCell *)[[UIViewController alloc] initWithNibName:@"RecordedTrackView" bundle:nil];
-            cell = (RecordedTrackCell *)recordedTrack;
-        }
-        
-        recordedTrack.trackLabel.text = [data valueForKey:@"name"];
-        recordedTrack.muteSwitch.on = ![[data valueForKey:@"muted"] boolValue];
-        recordedTrack.volumeSlider.value = [[data valueForKey:@"volume"] floatValue];
-        recordedTrack.muteSwitch.tag = indexPath.row;
-        recordedTrack.volumeSlider.tag = indexPath.row;
-        [recordedTrack.muteSwitch addTarget:self action:@selector(onMute:forEvent:) forControlEvents:UIControlEventValueChanged];
-        [recordedTrack.volumeSlider addTarget:self action:@selector(onAdjustVolume:forEvent:) forControlEvents:UIControlEventValueChanged];
-    }
-    
-    return cell;
 }
 
 #pragma mark - Button Listeners
@@ -176,10 +120,16 @@
 - (void)onRecord:(id)sender forEvent:(UIEvent *)event {
     if (!self.tableView.editing) {
         if (self.state == kIdle) {
+            [self arm];
+            self.state = kArmed;
+        }
+        else if (self.state == kArmed) {
             [self recordAudio];
+            self.state = kRecording;
         }
         else if (self.state == kRecording) {
-            [self stop];
+            self.state = kPendingSave;
+            [self stopRecording];
         }
     }
 }
@@ -187,10 +137,20 @@
 - (IBAction)onPlay:(id)sender {
     if (!self.tableView.editing) {
         if (self.state == kPlaying) {
-            [self stop];
+            [self stopPlaying];
+            self.state = kIdle;
+        }
+        else if (self.state == kPendingSave) {
+            [self playAudio];
+            self.state = kPreviewing;
         }
         else if (self.state == kIdle) {
             [self playAudio];
+            self.state = kPlaying;
+        }
+        else if (self.state = kPreviewing) {
+            [self stopPlaying];
+            self.state = kPendingSave;
         }
     }
 }
@@ -234,72 +194,88 @@
     self.playbackManager.scrubberPosition = 0;
 }
 
+- (void)onCancelRecording:(id)sender forEvent:(UIEvent *)event {
+    if (self.state == kArmed || self.state == kPendingSave) {
+        [self disarm];
+        self.state = kIdle;
+        [self.tableView beginUpdates];
+        [self deleteRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]];
+        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableView endUpdates];
+        [self noMorePendingTrackCell];
+    }
+}
+
+- (void)onSaveRecording:(id)sender forEvent:(UIEvent *)event {
+    self.state = kIdle;
+    [self saveRecording];
+    [self noMorePendingTrackCell];
+}
+
 #pragma mark - the magic
 
 -(void)recordAudio
 {
-    [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
     [self.currentTrack record];
     self.currentTrackInTime = self.playbackManager.scrubberPosition;
-    self.state = kRecording;
+    self.title = @"Recording";
 }
 
--(void)stop
+-(void)stopRecording
 {
-    if (self.state == kRecording)
-    {
-        double duration = self.currentTrack.currentTime;
-        [self.currentTrack stop];
-        [self.playbackManager stop];
-        [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
-        
-        //write the info about the new track to the database
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-        dateFormatter.timeStyle = NSDateFormatterShortStyle;
-        dateFormatter.dateStyle = NSDateFormatterShortStyle;
-        NSString *trackName = [dateFormatter stringFromDate:[NSDate date]];
-        
-        NSManagedObjectContext *context = self.managedObjectContext;
-        NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
-        [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
-        [trackModel setValue: trackName forKey:@"name"];
-        [trackModel setValue:[NSNumber numberWithDouble:duration] forKey:@"duration"];
-        [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
-        NSError *error = nil;
-        
-        if (![context save:&error]) {
-            NSLog(@"Coulnd't save track! %@", [error localizedDescription]);
-        }
-        else {
-            [self.recordedTracksData addObject:trackModel];
-            [self.playbackManager addTrack:trackModel];
-            [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
-            [self readyRecordingTrack];
-        }
+    float currentTrackDuration = self.currentTrack.currentTime;
+    [self.currentTrack stop];
+    [self.playbackManager stop];
+    
+    //write the info about the new track to the database
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    NSString *trackName = [dateFormatter stringFromDate:[NSDate date]];
+    
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
+    [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
+    [trackModel setValue: trackName forKey:@"name"];
+    [trackModel setValue:[NSNumber numberWithDouble:currentTrackDuration] forKey:@"duration"];
+    [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
+    NSError *error = nil;
+    
+    if (![context save:&error]) {
+        NSLog(@"Coulnd't save track! %@", [error localizedDescription]);
     }
-    else if (self.state == kPlaying)
-    {
-        if (self.playbackManager.playing) {
-            [self.playbackManager stop];
-        }
+    else {
+        [self.recordedTracksData addObject:trackModel];
+        [self.playbackManager addTrack:trackModel];
+        self.currentTrack = nil;
+        self.currentTrackInTime = 0;
         
-        self.recordButton.enabled = YES;
-        [self.playButton setTitle:@">" forState:UIControlStateNormal];
+        self.title = nil;
+        
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView endUpdates];
+    }
+}
+
+- (void)stopPlaying {
+    
+    if (self.playbackManager.playing) {
+        [self.playbackManager stop];
     }
     
-    self.state = kIdle;
+    [self.playButton setTitle:@">" forState:UIControlStateNormal];
 }
 
 -(void)playAudio
 {
-    self.recordButton.enabled = NO;
     [self.playButton setTitle:@"||" forState:UIControlStateNormal];
-    self.state = kPlaying;
     [self.playbackManager play];
 }
 
-- (void)readyRecordingTrack {
+- (void)arm {
     int now = [[NSDate date] timeIntervalSince1970];
     NSString *fileName = [NSString stringWithFormat:@"%d_%d.caf", now, arc4random() % 100000];
     NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:fileName];
@@ -317,8 +293,38 @@
     }
 }
 
+- (void)disarm {
+    [self.currentTrack deleteRecording];
+    self.currentTrack = nil;
+}
+
+- (void)saveRecording {
+    [self.tableView beginUpdates];
+    [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
+    [self.tableView endUpdates];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+}
+
+- (void)noMorePendingTrackCell {
+    self.pendingSaveTrackCell.pendingSave = NO;
+    [self.pendingSaveTrackCell.cancelButton removeTarget:self action:@selector(onCancelRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+    [self.pendingSaveTrackCell.saveButton removeTarget:self action:@selector(onSaveRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+    self.pendingSaveTrackCell = nil;
+}
+
+# pragma Playback Manager Delegate
+
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
-    [self stop];
+    [self stopPlaying];
+    
+    if (self.state != kRecording) {
+        if (self.state == kPlaying) {
+            self.state = kIdle;
+        }
+        else if (self.state == kPreviewing) {
+            self.state = kPendingSave;
+        }
+    }
 }
 
 - (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager {
@@ -327,6 +333,8 @@
         self.scrubberBar.value = targetValue;
     }
 }
+
+#pragma Table View Delegate
 
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -348,40 +356,111 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:indexPath.row];
-        NSURL *fileUrl = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
-        [self.recordedTracksData removeObject:trackData];
-        [self.playbackManager removeTrack:trackData];
-        [self.managedObjectContext deleteObject:trackData];
-        
-        NSError *error = nil;
-        [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
-        
-        if (error) {
-            NSLog(@"Error deleting file: %@", [error localizedDescription]);
-            
-            if ([[NSFileManager defaultManager] isReadableFileAtPath:fileUrl.path]) {
-                [self.managedObjectContext undo];
-            }
-        }
-        else {
-            [self.managedObjectContext save:&error];
-            
-            if (error) {
-                NSLog(@"Error deleting managed object for track: %@", [error localizedDescription]);
-            }
-        }
-        
-        
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-        if (self.recordedTracksData.count == 0) {
-            [self onEdit];
-        }
+        [self deleteRowAtIndexPath:indexPath];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
+}
+
+- (void)deleteRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Delete the row from the data source
+    NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:indexPath.row];
+    NSURL *fileUrl = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
+    [self.recordedTracksData removeObject:trackData];
+    [self.playbackManager removeTrack:trackData];
+    [self.managedObjectContext deleteObject:trackData];
+    
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
+    
+    if (error) {
+        NSLog(@"Error deleting file: %@", [error localizedDescription]);
+        
+        if ([[NSFileManager defaultManager] isReadableFileAtPath:fileUrl.path]) {
+            [self.managedObjectContext undo];
+        }
+    }
+    else {
+        [self.managedObjectContext save:&error];
+        
+        if (error) {
+            NSLog(@"Error deleting managed object for track: %@", [error localizedDescription]);
+        }
+    }
+    
+    
+    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+    if (self.recordedTracksData.count == 0) {
+        [self onEdit];
+    }
+}
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // Return the number of sections.
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    // Return the number of rows in the section.
+    //The number of tracks + 1 for the "Create New" track.
+    return self.state == kPendingSave ? self.recordedTracksData.count : self.recordedTracksData.count + 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell;
+    UIViewController *tempViewController;
+    
+    if (indexPath.row == self.recordedTracksData.count) {
+        
+        cell = [tableView dequeueReusableCellWithIdentifier:@"NewTrackView" forIndexPath:indexPath];
+        self.createNewTrackView = (NewTrackView *)cell;
+        
+        if (cell == nil) {
+            tempViewController = [[UIViewController alloc] initWithNibName:@"NewTrackView" bundle:nil];
+            self.createNewTrackView = (NewTrackView *)tempViewController.view;
+            cell = self.createNewTrackView;
+            
+        }
+        
+        [self.createNewTrackView.recordButton addTarget:self action:@selector(onRecord:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [self.createNewTrackView.cancelButton addTarget:self action:@selector(onCancelRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    else {
+        NSManagedObject *data = [self.recordedTracksData objectAtIndex:indexPath.row];
+        
+        cell = [tableView dequeueReusableCellWithIdentifier:@"RecordedTrackView" forIndexPath:indexPath];
+        RecordedTrackCell *recordedTrack = (RecordedTrackCell *)cell;
+        
+        if (cell == nil) {
+            recordedTrack = (RecordedTrackCell *)[[UIViewController alloc] initWithNibName:@"RecordedTrackView" bundle:nil];
+            cell = (RecordedTrackCell *)recordedTrack;
+        }
+        
+        recordedTrack.trackLabel.text = [data valueForKey:@"name"];
+        recordedTrack.muteSwitch.on = ![[data valueForKey:@"muted"] boolValue];
+        recordedTrack.volumeSlider.value = [[data valueForKey:@"volume"] floatValue];
+        recordedTrack.muteSwitch.tag = indexPath.row;
+        recordedTrack.volumeSlider.tag = indexPath.row;
+        recordedTrack.pendingSave = NO;
+        [recordedTrack.muteSwitch addTarget:self action:@selector(onMute:forEvent:) forControlEvents:UIControlEventValueChanged];
+        [recordedTrack.volumeSlider addTarget:self action:@selector(onAdjustVolume:forEvent:) forControlEvents:UIControlEventValueChanged];
+        
+        if (indexPath.row == self.recordedTracksData.count - 1 && self.state == kPendingSave) {
+            [self noMorePendingTrackCell];
+            recordedTrack.pendingSave = YES;
+            [recordedTrack.cancelButton addTarget:self action:@selector(onCancelRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+            [recordedTrack.saveButton addTarget:self action:@selector(onSaveRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+            self.pendingSaveTrackCell = recordedTrack;
+        }
+    }
+    
+    return cell;
 }
 
 /*
@@ -400,8 +479,6 @@
 }
 */
 
-#pragma mark - Table view delegate
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Navigation logic may go here. Create and push another view controller.
@@ -411,6 +488,15 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+}
+
+#pragma Getters and Setters
+
+- (void)setState:(int)state {
+    if (_state != state) {
+        _state = state;
+        self.createNewTrackView.state = state;
+    }
 }
 
 @end

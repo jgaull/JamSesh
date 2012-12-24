@@ -60,31 +60,7 @@
     
     for (NSManagedObject *trackData in self.song) {
         if (![[trackData valueForKey:@"muted"] boolValue]) {
-            NSURL *url = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
-            NSError *error = nil;
-            AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL: url error:&error];
-            
-            if (error) {
-                NSLog(@"Error loading player track: %@", [error localizedDescription]);
-            }
-            else {
-                float startDelay = [[trackData valueForKey:@"inPoint"] floatValue] - self.scrubberPosition;
-                
-                if (startDelay > 0 || ABS(startDelay) < [[trackData valueForKey:@"duration"] floatValue]) {
-                    player.volume = [[trackData valueForKey:@"volume"] floatValue];
-                    player.delegate = self;
-                    
-                    if (startDelay <= 0) {
-                        player.currentTime = ABS(startDelay);
-                        [player play];
-                    }
-                    else {
-                        [player playAtTime:player.deviceCurrentTime + startDelay];
-                    }
-                    
-                    [self.players addObject:player];
-                }
-            }
+            [self playTrack:trackData]; //This might have issues with latency. Tracks might need to be armed first and then played.
         }
     }
     
@@ -92,10 +68,6 @@
     self.startPlaybackTime = [NSDate date];
     self.playbackStartingLocation = self.scrubberPosition;
     [self scrubberUpdateLoopBegin];
-    
-    if (self.players.count == 0) {
-        [self performSelector:@selector(forceFinish) withObject:nil afterDelay:self.songLength];
-    }
 }
 
 - (void)stop {
@@ -111,16 +83,6 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     player.delegate = nil;
     [self.players removeObject:player];
-    
-    if (self.players.count == 0) {
-        [self endPlayback];
-        self.scrubberPosition = self.songLength;
-    }
-}
-
-- (void)forceFinish {
-    self.scrubberPosition = self.songLength;
-    [self endPlayback];
 }
 
 - (void)endPlayback {
@@ -157,7 +119,7 @@
 
 - (void)updateScrubberPosition {
     NSTimeInterval timePassed = ABS([self.startPlaybackTime timeIntervalSinceNow]);
-    _scrubberPosition = timePassed + self.playbackStartingLocation;
+    _scrubberPosition = MIN(timePassed + self.playbackStartingLocation, self.songLength);
     
     if ([self.delegate respondsToSelector:@selector(playbackManagerScrubberDidMove:)]) {
         [self.delegate playbackManagerScrubberDidMove:self];
@@ -169,6 +131,10 @@
     static float updateFrequency = 0.03;
     [self performSelector:@selector(scrubberUpdateLoopBegin) withObject:nil afterDelay:updateFrequency];
     [self updateScrubberPosition];
+    
+    if (_scrubberPosition == self.songLength) {
+        [self endPlayback];
+    }
 }
 
 - (void)scrubberUpdateLoopEnd {
@@ -180,7 +146,10 @@
     for (NSManagedObject *trackData in updatedObjects) {
         AVAudioPlayer *player = [self getPlayerFromData:trackData];
         
-        if ([[trackData valueForKey:@"muted"] boolValue]) {
+        if (player == nil && ![[trackData valueForKey:@"muted"] boolValue]) {
+            [self playTrack:trackData];
+        }
+        else if ([[trackData valueForKey:@"muted"] boolValue]) {
             player.volume = 0;
         }
         else {
@@ -200,6 +169,35 @@
     }
     
     return nil;
+}
+
+- (void)playTrack:(NSManagedObject *)trackData {
+    
+    NSURL *url = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
+    NSError *error = nil;
+    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL: url error:&error];
+    
+    if (error) {
+        NSLog(@"Error loading player track: %@", [error localizedDescription]);
+    }
+    else {
+        float startDelay = [[trackData valueForKey:@"inPoint"] floatValue] - self.scrubberPosition;
+        
+        if (startDelay > 0 || ABS(startDelay) < [[trackData valueForKey:@"duration"] floatValue]) {
+            player.volume = [[trackData valueForKey:@"volume"] floatValue];
+            player.delegate = self;
+            
+            if (startDelay <= 0) {
+                player.currentTime = ABS(startDelay);
+                [player play];
+            }
+            else {
+                [player playAtTime:player.deviceCurrentTime + startDelay];
+            }
+            
+            [self.players addObject:player];
+        }
+    }
 }
 
 - (float)songLength {

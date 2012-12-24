@@ -11,5 +11,9 @@
 @interface NewTrackView : UITableViewCell
 
 @property (strong, nonatomic) IBOutlet UIButton *recordButton;
+@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
+@property (strong, nonatomic) IBOutlet UILabel *createNewTrackLabel;
+@property (strong, nonatomic) IBOutlet UILabel *timerLabel;
+@property (nonatomic) int state;
 
 @end

@@ -10,8 +10,11 @@
 
 @interface RecordedTrackCell : UITableViewCell
 
+@property (nonatomic) BOOL pendingSave;
 @property (strong, nonatomic) IBOutlet UISlider *volumeSlider;
 @property (strong, nonatomic) IBOutlet UISwitch *muteSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *trackLabel;
+@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
+@property (strong, nonatomic) IBOutlet UIButton *saveButton;
 
 @end

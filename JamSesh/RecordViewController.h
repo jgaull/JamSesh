@@ -13,7 +13,10 @@
 
 static const int kIdle = 0;
 static const int kPlaying = 1;
-static const int kRecording = 2;
+static const int kArmed = 2;
+static const int kRecording = 3;
+static const int kPendingSave = 4;
+static const int kPreviewing = 5;
 
 @interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate>
 
