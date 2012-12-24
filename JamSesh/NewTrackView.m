@@ -8,7 +8,6 @@
 
 #import "NewTrackView.h"
 #import "RecordViewController.h"
-#import "Utils.h"
 
 @interface NewTrackView ()
 
@@ -81,8 +80,7 @@
 }
 
 - (void)updateTimer {
-    NSDictionary *timeMap = [Utils createTimemapForSeconds:ABS([self.startTime timeIntervalSinceNow])];
-    self.timerLabel.text = [NSString stringWithFormat:@"%@:%@:%@", [timeMap objectForKey:@"m"], [timeMap objectForKey:@"s"], [timeMap objectForKey:@"hundreths"]];
+    self.timerLabel.text = [NSString stringWithFormat:@"%f", [self.startTime timeIntervalSinceNow]];
     [self performSelector:@selector(updateTimer) withObject:nil afterDelay:0.01];
 }
 
