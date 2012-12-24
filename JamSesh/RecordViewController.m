@@ -182,7 +182,7 @@
 - (void)onEdit {
     [self.playbackManager stop];
     [self.tableView setEditing:!self.tableView.editing animated:YES];
-    
+     
     UIBarButtonItemStyle style = self.tableView.editing ? UIBarButtonItemStyleDone : UIBarButtonItemStylePlain;
     NSString *title = self.tableView.editing ? @"Done" : @"Edit";
     
