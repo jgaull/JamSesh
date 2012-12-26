@@ -10,6 +10,7 @@
 #import "NewTrackView.h"
 #import "RecordedTrackCell.h"
 #import "PlaybackManager.h"
+#import "PlaybackControlsViewController.h"
 
 @interface RecordViewController ()
 
@@ -18,6 +19,7 @@
 @property (strong, nonatomic) NSString *basePath;
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
 @property (strong, nonatomic) PlaybackManager *playbackManager;
+@property (strong, nonatomic) PlaybackControlsViewController *playbackControls;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
 @property (strong, nonatomic) NSDictionary *recordSettings;
@@ -83,6 +85,11 @@
     //set up some UI
     self.scrubberBar.maximumValue = 1;
     self.scrubberBar.value = self.playbackManager.scrubberPosition;
+    
+    PlaybackControlsViewController *playbackControls = [[PlaybackControlsViewController alloc] initWithNibName:@"PlaybackControlsView" bundle:nil];
+    self.playbackControls = playbackControls;
+    playbackControls.playbackManager = self.playbackManager;
+    self.navigationItem.titleView = playbackControls.view;
 }
 
 - (void)didReceiveMemoryWarning
@@ -151,6 +158,13 @@
             [self stopPlaying];
             self.state = kPendingSave;
         }
+    }
+}
+
+- (void)onCancelRecording:(id)sender forEvent:(UIEvent *)event {
+    if (self.state == kArmed || self.state == kPendingSave) {
+        [self disarm];
+        self.state = kIdle;
     }
 }
 
@@ -491,6 +505,14 @@
     if (_state != state) {
         _state = state;
         self.createNewTrackView.state = state;
+        
+        if (_state == kArmed) {
+            self.navigationItem.titleView = nil;
+            self.navigationItem.title = @"00:00.0";
+        }
+        else if (_state == kPendingSave || _state == kIdle) {
+            self.navigationItem.titleView = self.playbackControls.view;
+        }
     }
 }
 

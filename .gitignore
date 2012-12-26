@@ -19,3 +19,5 @@ DerivedData
 *.xcuserdatad
 
 JamSesh.xcodeproj/project.pbxproj
+
+JamSesh.xcodeproj/xcuserdata/jonathangaull.xcuserdatad/xcdebugger/Breakpoints.xcbkptlist

@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PlaybackManager.h"
 
 @interface PlaybackControlsViewController : UIViewController
+
+@property (weak, nonatomic) PlaybackManager *playbackManager;
 
 @end

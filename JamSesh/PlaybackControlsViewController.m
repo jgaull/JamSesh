@@ -10,6 +10,8 @@
 
 @interface PlaybackControlsViewController ()
 
+@property (strong, nonatomic) IBOutlet UIButton *playButton;
+
 @end
 
 @implementation PlaybackControlsViewController
@@ -18,7 +20,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        
     }
     return self;
 }
@@ -27,12 +29,28 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    //[self.playButton addTarget:self action:@selector(onPlayButton:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)onPlayButton:(id)sender {
+    if (self.playbackManager.playing) {
+        [self.playbackManager stop];
+        [self.playButton setTitle:@">" forState:UIControlStateNormal];
+    }
+    else {
+        [self.playbackManager play];
+        [self.playButton setTitle:@"||" forState:UIControlStateNormal];
+    }
+}
+
+- (void)onBackButton:(id)sender {
+    self.playbackManager.scrubberPosition = 0;
 }
 
 @end
