@@ -102,7 +102,13 @@
         length = MAX([[trackData valueForKey:@"inPoint"] floatValue] + [[trackData valueForKey:@"duration"] floatValue], length);
     }
     
-    _songLength = length;
+    if (_songLength != length) {
+        _songLength = length;
+        
+        if ([self.delegate respondsToSelector:@selector(playbackManagerSongLengthDidChange:)]) {
+            [self.delegate playbackManagerSongLengthDidChange:self];
+        }
+    }
 }
 
 - (void)setScrubberPosition:(float)scrubberPosition {
@@ -124,7 +130,6 @@
     if ([self.delegate respondsToSelector:@selector(playbackManagerScrubberDidMove:)]) {
         [self.delegate playbackManagerScrubberDidMove:self];
     }
-    
 }
 
 - (void)scrubberUpdateLoopBegin {

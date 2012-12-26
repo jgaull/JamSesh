@@ -8,6 +8,13 @@
 
 #import "RecordedTrackCell.h"
 
+@interface RecordedTrackCell ()
+
+@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
+@property (strong, nonatomic) IBOutlet UIButton *saveButton;
+
+@end
+
 @implementation RecordedTrackCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -30,6 +37,30 @@
     self.trackLabel.hidden = pendingSave;
     self.cancelButton.hidden = !pendingSave;
     self.saveButton.hidden = !pendingSave;
+}
+
+- (IBAction)onVolumeChange:(UISlider *)sender {
+    if ([self.delegate respondsToSelector:@selector(recordedTrackCellVolumeDidChange:value:)]) {
+        [self.delegate recordedTrackCellVolumeDidChange:self value:sender.value];
+    }
+}
+
+- (IBAction)onMuteChange:(UISwitch *)sender {
+    if ([self.delegate respondsToSelector:@selector(recordedTrackCellMuteDidChange:value:)]) {
+        [self.delegate recordedTrackCellMuteDidChange:self value:sender.on];
+    }
+}
+
+- (IBAction)onCancel:(UIButton *)sender {
+    if([self.delegate respondsToSelector:@selector(recordedTrackCellUserDidCancel:)]) {
+        [self.delegate recordedTrackCellUserDidCancel:self];
+    }
+}
+
+- (IBAction)onSave:(UIButton *)sender {
+    if ([self.delegate respondsToSelector:@selector(recordedTrackCellUserDidSave:)]) {
+        [self.delegate recordedTrackCellUserDidSave:self];
+    }
 }
 
 @end

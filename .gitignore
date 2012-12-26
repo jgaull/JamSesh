@@ -17,3 +17,5 @@ profile
 DerivedData
 .idea/
 *.xcuserdatad
+
+JamSesh.xcodeproj/project.pbxproj

@@ -10,7 +10,6 @@
 #import "NewTrackView.h"
 #import "RecordedTrackCell.h"
 #import "PlaybackManager.h"
-#import "PlaybackControllsView.h"
 
 @interface RecordViewController ()
 
@@ -155,26 +154,6 @@
     }
 }
 
-- (void)onMute:(UISwitch *)sender forEvent:(UIEvent *)event {
-    NSManagedObject *data = [self.recordedTracksData objectAtIndex:sender.tag];
-    [data setValue:[NSNumber numberWithBool:!sender.on] forKey:@"muted"];
-    NSError *error = nil;
-    
-    if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Oops. Error saving your muting of the track duder: %@", [error localizedDescription]);
-    }
-}
-
-- (void)onAdjustVolume:(UISlider *)sender forEvent:(UIEvent *)event {
-    NSManagedObject *data = [self.recordedTracksData objectAtIndex:sender.tag];
-    [data setValue:[NSNumber numberWithFloat:sender.value] forKey:@"volume"];
-    NSError *error = nil;
-    
-    if (![self.managedObjectContext save:&error]) {
-        NSLog(@"Oops. Error saving your muting of the track duder: %@", [error localizedDescription]);
-    }
-}
-
 - (IBAction)scrubberBar:(id)sender {
     self.playbackManager.scrubberPosition = self.playbackManager.songLength * self.scrubberBar.value;
 }
@@ -192,24 +171,6 @@
 
 - (IBAction)onSkipBack:(id)sender {
     self.playbackManager.scrubberPosition = 0;
-}
-
-- (void)onCancelRecording:(id)sender forEvent:(UIEvent *)event {
-    if (self.state == kArmed || self.state == kPendingSave) {
-        [self disarm];
-        self.state = kIdle;
-        [self.tableView beginUpdates];
-        [self deleteRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]];
-        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-        [self.tableView endUpdates];
-        [self noMorePendingTrackCell];
-    }
-}
-
-- (void)onSaveRecording:(id)sender forEvent:(UIEvent *)event {
-    self.state = kIdle;
-    [self saveRecording];
-    [self noMorePendingTrackCell];
 }
 
 #pragma mark - the magic
@@ -307,12 +268,10 @@
 
 - (void)noMorePendingTrackCell {
     self.pendingSaveTrackCell.pendingSave = NO;
-    [self.pendingSaveTrackCell.cancelButton removeTarget:self action:@selector(onCancelRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [self.pendingSaveTrackCell.saveButton removeTarget:self action:@selector(onSaveRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
     self.pendingSaveTrackCell = nil;
 }
 
-# pragma Playback Manager Delegate
+#pragma mark - Playback Manager Delegate
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
     [self stopPlaying];
@@ -334,7 +293,7 @@
     }
 }
 
-#pragma Table View Delegate
+#pragma mark - Table View Delegate
 
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -439,28 +398,64 @@
         
         if (cell == nil) {
             recordedTrack = (RecordedTrackCell *)[[UIViewController alloc] initWithNibName:@"RecordedTrackView" bundle:nil];
-            cell = (RecordedTrackCell *)recordedTrack;
+            cell = recordedTrack;
         }
         
         recordedTrack.trackLabel.text = [data valueForKey:@"name"];
         recordedTrack.muteSwitch.on = ![[data valueForKey:@"muted"] boolValue];
         recordedTrack.volumeSlider.value = [[data valueForKey:@"volume"] floatValue];
-        recordedTrack.muteSwitch.tag = indexPath.row;
-        recordedTrack.volumeSlider.tag = indexPath.row;
+        recordedTrack.tag = indexPath.row;
         recordedTrack.pendingSave = NO;
-        [recordedTrack.muteSwitch addTarget:self action:@selector(onMute:forEvent:) forControlEvents:UIControlEventValueChanged];
-        [recordedTrack.volumeSlider addTarget:self action:@selector(onAdjustVolume:forEvent:) forControlEvents:UIControlEventValueChanged];
+        recordedTrack.delegate = self;
         
         if (indexPath.row == self.recordedTracksData.count - 1 && self.state == kPendingSave) {
             [self noMorePendingTrackCell];
             recordedTrack.pendingSave = YES;
-            [recordedTrack.cancelButton addTarget:self action:@selector(onCancelRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
-            [recordedTrack.saveButton addTarget:self action:@selector(onSaveRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
             self.pendingSaveTrackCell = recordedTrack;
         }
     }
     
     return cell;
+}
+
+#pragma mark - Recorded Track Cell Delegate
+
+- (void)recordedTrackCellVolumeDidChange:(RecordedTrackCell *)cell value:(float)value {
+    NSManagedObject *data = [self.recordedTracksData objectAtIndex:cell.tag];
+    [data setValue:[NSNumber numberWithFloat:cell.volumeSlider.value] forKey:@"volume"];
+    
+    NSError *error = nil;
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Oops. Error saving your muting of the track duder: %@", [error localizedDescription]);
+    }
+}
+
+- (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value {
+    NSManagedObject *data = [self.recordedTracksData objectAtIndex:cell.tag];
+    [data setValue:[NSNumber numberWithBool:!cell.muteSwitch.on] forKey:@"muted"];
+    
+    NSError *error = nil;
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Oops. Error saving your muting of the track duder: %@", [error localizedDescription]);
+    }
+}
+
+- (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell {
+    if (self.state == kArmed || self.state == kPendingSave) {
+        [self disarm];
+        self.state = kIdle;
+        [self.tableView beginUpdates];
+        [self deleteRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]];
+        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableView endUpdates];
+        [self noMorePendingTrackCell];
+    }
+}
+
+- (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell {
+    self.state = kIdle;
+    [self saveRecording];
+    [self noMorePendingTrackCell];
 }
 
 /*
@@ -490,7 +485,7 @@
      */
 }
 
-#pragma Getters and Setters
+#pragma mark - Getters and Setters
 
 - (void)setState:(int)state {
     if (_state != state) {

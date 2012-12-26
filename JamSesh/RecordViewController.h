@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreData/CoreData.h>
+
 #import "PlaybackManager.h"
+#import "RecordedTrackCell.h"
 
 static const int kIdle = 0;
 static const int kPlaying = 1;
@@ -18,7 +20,7 @@ static const int kRecording = 3;
 static const int kPendingSave = 4;
 static const int kPreviewing = 5;
 
-@interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate, RecordedTrackCellDelegate>
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -34,7 +36,13 @@ static const int kPreviewing = 5;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
+
 - (void)appResignActive;
 - (void)appBecomeActive;
+
+- (void)recordedTrackCellVolumeDidChange:(RecordedTrackCell *)cell value:(float)value;
+- (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value;
+- (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell;
+- (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell;
 
 @end

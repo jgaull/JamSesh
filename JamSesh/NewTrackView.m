@@ -46,7 +46,7 @@
                 self.timerLabel.hidden = NO;
                 self.recordButton.hidden = NO;
                 [self.recordButton setTitle:@"Start" forState:UIControlStateNormal];
-                self.timerLabel.text = @"00:00:00";
+                self.timerLabel.text = @"0:0.0";
                 break;
             case kRecording:
                 self.cancelButton.hidden = NO;
@@ -80,7 +80,15 @@
 }
 
 - (void)updateTimer {
-    self.timerLabel.text = [NSString stringWithFormat:@"%f", [self.startTime timeIntervalSinceNow]];
+    float timePassed = ABS([self.startTime timeIntervalSinceNow]);
+    long time = timePassed;
+    long preciseTime = timePassed * 10;
+    
+    int minutes = timePassed / 60;
+    int seconds = time % 60;
+    int tenths = preciseTime % 10;
+    
+    self.timerLabel.text = [NSString stringWithFormat:@"%d:%d.%d", minutes, seconds, tenths];
     [self performSelector:@selector(updateTimer) withObject:nil afterDelay:0.01];
 }
 

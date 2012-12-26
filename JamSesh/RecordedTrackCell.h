@@ -8,13 +8,25 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol RecordedTrackCellDelegate;
+
 @interface RecordedTrackCell : UITableViewCell
 
+@property (nonatomic, weak) NSObject <RecordedTrackCellDelegate> *delegate;
 @property (nonatomic) BOOL pendingSave;
+
 @property (strong, nonatomic) IBOutlet UISlider *volumeSlider;
 @property (strong, nonatomic) IBOutlet UISwitch *muteSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *trackLabel;
-@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
-@property (strong, nonatomic) IBOutlet UIButton *saveButton;
+
+@end
+
+@protocol RecordedTrackCellDelegate <NSObject>
+@optional
+
+- (void)recordedTrackCellVolumeDidChange:(RecordedTrackCell *)cell value:(float)value;
+- (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value;
+- (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell;
+- (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell;
 
 @end

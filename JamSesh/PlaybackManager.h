@@ -15,7 +15,7 @@
 @interface PlaybackManager : NSObject <AVAudioPlayerDelegate>
 
 @property (nonatomic, readonly) BOOL playing;
-@property (nonatomic, weak) id <PlaybackManagerDelegate> delegate;
+@property (nonatomic, weak) NSObject <PlaybackManagerDelegate> *delegate;
 @property (nonatomic) float scrubberPosition;
 @property (nonatomic, readonly) float songLength;
 
@@ -34,5 +34,6 @@
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
 - (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
+- (void)playbackManagerSongLengthDidChange:(PlaybackManager *)manager;
 
 @end
