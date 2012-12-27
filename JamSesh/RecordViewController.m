@@ -55,7 +55,6 @@
     NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     self.recordedTracksData = [[NSMutableArray alloc] initWithArray:fetchedObjects];
     self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData andContext:self.managedObjectContext];
-    self.playbackManager.delegate = self;
     
     //register the table view cells that we'll be using.
     [self.tableView registerNib:[UINib nibWithNibName:@"NewTrackView" bundle:nil] forCellReuseIdentifier:@"NewTrackView"];
@@ -105,11 +104,6 @@
 
 #pragma mark - Button Listeners
 
-- (IBAction)scrubberBar:(id)sender {
-    self.playbackManager.scrubberPosition = self.playbackManager.songLength * self.scrubberBar.value;
-#warning The scrubber bar should be a part of the playback controls
-}
-
 - (void)onEdit {
     [self.playbackManager stop];
     [self.tableView setEditing:!self.tableView.editing animated:YES];
@@ -133,9 +127,7 @@
 
 - (void)saveRecording {
     self.pendingSave = NO;
-    [self.tableView beginUpdates];
-    [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0], nil] withRowAnimation:UITableViewRowAnimationTop];
-    [self.tableView endUpdates];
+    [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
 }
 
@@ -145,7 +137,8 @@
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the specified item to be editable.
-    if (indexPath.row != self.recordedTracksData.count) {
+    int lockedCell = self.pendingSave ? self.recordedTracksData.count - 1 : self.recordedTracksData.count;
+    if (indexPath.row != lockedCell) {
         return YES;
     }
     
@@ -160,17 +153,18 @@
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self deleteRowAtIndexPath:indexPath];
+    if (editingStyle == UITableViewCellEditingStyleDelete &&
+        [self deleteDataAtIndex:indexPath.row]) {
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
 
-- (void)deleteRowAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)deleteDataAtIndex:(int)row {
     // Delete the row from the data source
-    NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:indexPath.row];
+    NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:row];
     NSURL *fileUrl = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
     [self.recordedTracksData removeObject:trackData];
     [self.playbackManager removeTrack:trackData];
@@ -192,13 +186,15 @@
         if (error) {
             NSLog(@"Error deleting managed object for track: %@", [error localizedDescription]);
         }
+        
+        if (self.recordedTracksData.count == 0) {
+            [self onEdit];
+        }
+        
+        return YES;
     }
     
-    
-    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
-    if (self.recordedTracksData.count == 0) {
-        [self onEdit];
-    }
+    return NO;
 }
 
 #pragma mark - Table view data source
@@ -247,7 +243,7 @@
         recordedTrack.trackLabel.text = [data valueForKey:@"name"];
         recordedTrack.muteSwitch.on = ![[data valueForKey:@"muted"] boolValue];
         recordedTrack.volumeSlider.value = [[data valueForKey:@"volume"] floatValue];
-        recordedTrack.tag = indexPath.row;
+        recordedTrack.trackId = data.objectID;
         recordedTrack.pendingSave = NO;
         recordedTrack.delegate = self;
         
@@ -296,7 +292,6 @@
     self.currentTrackInTime = self.playbackManager.scrubberPosition;
     
     return YES;
-#warning I need to handle the edit button while recording/armed
 }
 
 - (void)newTrackViewEndRecording:(NewTrackView *)newTrackView {
@@ -338,8 +333,8 @@
         
         //update the table view so that it shows the track pending save and no longer shows the new track
         [self.tableView beginUpdates];
-        [self.tableView deleteRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationLeft];
-        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
         [self.tableView endUpdates];
         
         //Put back the playback controls
@@ -350,12 +345,14 @@
 
 - (void)newTrackViewDisarm:(NewTrackView *)newTrackView {
     [self disarm];
+    self.navigationItem.titleView = self.playbackControls.view;
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 #pragma mark - Recorded Track Cell Delegate
 
 - (void)recordedTrackCellVolumeDidChange:(RecordedTrackCell *)cell value:(float)value {
-    NSManagedObject *data = [self.recordedTracksData objectAtIndex:cell.tag];
+    NSManagedObject *data = [self.managedObjectContext objectRegisteredForID:cell.trackId];
     [data setValue:[NSNumber numberWithFloat:cell.volumeSlider.value] forKey:@"volume"];
     
     NSError *error = nil;
@@ -365,8 +362,7 @@
 }
 
 - (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value {
-    NSManagedObject *data = [self.recordedTracksData objectAtIndex:cell.tag];
-#warning This will throw an error if the user deletes any tracks.
+    NSManagedObject *data = [self.managedObjectContext objectRegisteredForID:cell.trackId];
     [data setValue:[NSNumber numberWithBool:!cell.muteSwitch.on] forKey:@"muted"];
     
     NSError *error = nil;
@@ -377,11 +373,14 @@
 
 - (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell {
     [self disarm];
-    [self.tableView beginUpdates];
-#warning This should probably change. It's weird to not make the call directly to the table view
-    [self deleteRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]];
-    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-    [self.tableView endUpdates];
+    
+    if ([self deleteDataAtIndex:self.recordedTracksData.count - 1]) {
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+        [self.tableView endUpdates];
+    }
+    
     cell.pendingSave = NO;
 }
 

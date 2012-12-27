@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
 
 @protocol RecordedTrackCellDelegate;
 
@@ -14,6 +15,7 @@
 
 @property (nonatomic, weak) NSObject <RecordedTrackCellDelegate> *delegate;
 @property (nonatomic) BOOL pendingSave;
+@property (nonatomic, strong) NSManagedObjectID *trackId;
 
 @property (strong, nonatomic) IBOutlet UISlider *volumeSlider;
 @property (strong, nonatomic) IBOutlet UISwitch *muteSwitch;
