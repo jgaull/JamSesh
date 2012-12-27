@@ -12,7 +12,9 @@
 @interface PlaybackControlsViewController : UIViewController <PlaybackManagerDelegate>
 
 @property (weak, nonatomic) PlaybackManager *playbackManager;
+@property (weak, nonatomic) UISlider *scrubberBar;
 
-- (void)playbackEnded;
+- (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
 
 @end

@@ -53,8 +53,15 @@
     self.playbackManager.scrubberPosition = 0;
 }
 
-- (void)playbackEnded {
+- (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
     [self.playButton setTitle:@">" forState:UIControlStateNormal];
+}
+
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager {
+    float targetValue = self.playbackManager.scrubberPosition / self.playbackManager.songLength;
+    if (self.scrubberBar.value != targetValue) {
+        self.scrubberBar.value = targetValue;
+    }
 }
 
 @end

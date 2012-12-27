@@ -21,7 +21,7 @@ static const int kRecording = 3;
 static const int kPendingSave = 4;
 static const int kPreviewing = 5;
 
-@interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate, RecordedTrackCellDelegate, NewTrackViewDelegate>
+@interface RecordViewController : UIViewController <AVAudioRecorderDelegate, UITableViewDataSource, UITableViewDelegate, RecordedTrackCellDelegate, NewTrackViewDelegate>
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -36,9 +36,6 @@ static const int kPreviewing = 5;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
-
-//Playback Manager Delegate
-- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
 
 //Recorded Track Cell Delegate
 - (void)recordedTrackCellVolumeDidChange:(RecordedTrackCell *)cell value:(float)value;

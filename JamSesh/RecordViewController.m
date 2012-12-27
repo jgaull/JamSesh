@@ -84,6 +84,8 @@
     self.playbackControls = playbackControls;
     playbackControls.playbackManager = self.playbackManager;
     self.navigationItem.titleView = playbackControls.view;
+    self.playbackControls.scrubberBar = self.scrubberBar;
+    self.playbackManager.delegate = self.playbackControls;
 }
 
 - (void)didReceiveMemoryWarning
@@ -135,20 +137,6 @@
     [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0], nil] withRowAnimation:UITableViewRowAnimationTop];
     [self.tableView endUpdates];
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-}
-
-#pragma mark - Playback Manager Delegate
-
-- (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
-    [self.playbackControls playbackEnded];
-#warning The playback controls should be the only delegate of the playback manager. Move the scrubber bar into that class.
-}
-
-- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager {
-    float targetValue = self.playbackManager.scrubberPosition / self.playbackManager.songLength;
-    if (self.scrubberBar.value != targetValue) {
-        self.scrubberBar.value = targetValue;
-    }
 }
 
 #pragma mark - Table View Delegate
