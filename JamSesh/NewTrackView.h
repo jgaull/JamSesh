@@ -8,12 +8,22 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol NewTrackViewDelegate;
+
 @interface NewTrackView : UITableViewCell
 
-@property (strong, nonatomic) IBOutlet UIButton *recordButton;
-@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
-@property (strong, nonatomic) IBOutlet UILabel *createNewTrackLabel;
-@property (strong, nonatomic) IBOutlet UILabel *timerLabel;
-@property (nonatomic) int state;
+@property (weak, nonatomic) NSObject <NewTrackViewDelegate> *delegate;
+
+@end
+
+@protocol NewTrackViewDelegate <NSObject>
+
+- (BOOL)newTrackViewShouldBeginRecording:(NewTrackView *)newTrackView;
+- (BOOL)newTrackViewShouldArmForRecording:(NewTrackView *)newTrackView;
+
+@optional
+
+- (void)newTrackViewDisarm:(NewTrackView *)newTrackView;
+- (void)newTrackViewEndRecording:(NewTrackView *)newTrackView;
 
 @end

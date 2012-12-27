@@ -9,8 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "PlaybackManager.h"
 
-@interface PlaybackControlsViewController : UIViewController
+@interface PlaybackControlsViewController : UIViewController <PlaybackManagerDelegate>
 
 @property (weak, nonatomic) PlaybackManager *playbackManager;
+
+- (void)playbackEnded;
 
 @end

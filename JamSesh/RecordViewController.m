@@ -14,23 +14,19 @@
 
 @interface RecordViewController ()
 
-@property (nonatomic) int state;
-
 @property (strong, nonatomic) NSString *basePath;
+@property (strong, nonatomic) NSDictionary *recordSettings;
+
 @property (strong, nonatomic) AVAudioRecorder *currentTrack;
 @property (strong, nonatomic) PlaybackManager *playbackManager;
 @property (strong, nonatomic) PlaybackControlsViewController *playbackControls;
 
 @property (strong, nonatomic) NSMutableArray *recordedTracksData;
-@property (strong, nonatomic) NSDictionary *recordSettings;
-
-@property (strong, nonatomic) IBOutlet UIButton *playButton;
-@property (strong, nonatomic) IBOutlet UISlider *scrubberBar;
-
-@property (strong, nonatomic) NewTrackView *createNewTrackView;
-@property (strong, nonatomic) RecordedTrackCell *pendingSaveTrackCell;
 
 @property (nonatomic) float currentTrackInTime;
+@property (nonatomic) BOOL pendingSave;
+
+@property (strong, nonatomic) IBOutlet UISlider *scrubberBar;
 
 @end
 
@@ -51,7 +47,7 @@
     self.editButtonItem.action = @selector(onEdit);
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    //create data and fill it up here. Will probably have to load tracks from storage.
+    //create data and fill it up here.
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"TrackModel" inManagedObjectContext:self.managedObjectContext];
     [fetchRequest setEntity:entity];
@@ -61,7 +57,7 @@
     self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData andContext:self.managedObjectContext];
     self.playbackManager.delegate = self;
     
-    //register the table views that we'll be using.
+    //register the table view cells that we'll be using.
     [self.tableView registerNib:[UINib nibWithNibName:@"NewTrackView" bundle:nil] forCellReuseIdentifier:@"NewTrackView"];
     [self.tableView registerNib:[UINib nibWithNibName:@"RecordedTrackView" bundle:nil] forCellReuseIdentifier:@"RecordedTrackView"];
     
@@ -79,13 +75,11 @@
                            AVSampleRateKey,
                            nil];
     
-    //some things that need to be set before the magic happens.
-    self.state = kIdle;
-    
     //set up some UI
     self.scrubberBar.maximumValue = 1;
     self.scrubberBar.value = self.playbackManager.scrubberPosition;
     
+    //Create the playback controls
     PlaybackControlsViewController *playbackControls = [[PlaybackControlsViewController alloc] initWithNibName:@"PlaybackControlsView" bundle:nil];
     self.playbackControls = playbackControls;
     playbackControls.playbackManager = self.playbackManager;
@@ -99,22 +93,8 @@
 }
 
 - (void)appResignActive {
-    switch (self.state) {
-        case kIdle:
-            [self.currentTrack deleteRecording];
-            self.currentTrack = nil;
-            break;
-        case kRecording:
-            [self stopRecording];
-            break;
-        case kPlaying:
-            [self stopPlaying];
-            break;
-        case kArmed:
-            [self disarm];
-        default:
-            break;
-    }
+#warning Need to delete disarm if armed
+#warning need to stop playing if playing
 }
 
 - (void)appBecomeActive {
@@ -123,53 +103,9 @@
 
 #pragma mark - Button Listeners
 
-- (void)onRecord:(id)sender forEvent:(UIEvent *)event {
-    if (!self.tableView.editing) {
-        if (self.state == kIdle) {
-            [self arm];
-            self.state = kArmed;
-        }
-        else if (self.state == kArmed) {
-            [self recordAudio];
-            self.state = kRecording;
-        }
-        else if (self.state == kRecording) {
-            self.state = kPendingSave;
-            [self stopRecording];
-        }
-    }
-}
-
-- (IBAction)onPlay:(id)sender {
-    if (!self.tableView.editing) {
-        if (self.state == kPlaying) {
-            [self stopPlaying];
-            self.state = kIdle;
-        }
-        else if (self.state == kPendingSave) {
-            [self playAudio];
-            self.state = kPreviewing;
-        }
-        else if (self.state == kIdle) {
-            [self playAudio];
-            self.state = kPlaying;
-        }
-        else if (self.state = kPreviewing) {
-            [self stopPlaying];
-            self.state = kPendingSave;
-        }
-    }
-}
-
-- (void)onCancelRecording:(id)sender forEvent:(UIEvent *)event {
-    if (self.state == kArmed || self.state == kPendingSave) {
-        [self disarm];
-        self.state = kIdle;
-    }
-}
-
 - (IBAction)scrubberBar:(id)sender {
     self.playbackManager.scrubberPosition = self.playbackManager.songLength * self.scrubberBar.value;
+#warning The scrubber bar should be a part of the playback controls
 }
 
 - (void)onEdit {
@@ -183,121 +119,29 @@
     self.navigationItem.rightBarButtonItem.title = title;
 }
 
-- (IBAction)onSkipBack:(id)sender {
-    self.playbackManager.scrubberPosition = 0;
-}
-
 #pragma mark - the magic
 
--(void)recordAudio
-{
-    [self.currentTrack record];
-    self.currentTrackInTime = self.playbackManager.scrubberPosition;
-    self.title = @"Recording";
-}
-
--(void)stopRecording
-{
-    float currentTrackDuration = self.currentTrack.currentTime;
-    [self.currentTrack stop];
-    [self.playbackManager stop];
-    
-    //write the info about the new track to the database
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
-    dateFormatter.timeStyle = NSDateFormatterShortStyle;
-    dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    NSString *trackName = [dateFormatter stringFromDate:[NSDate date]];
-    
-    NSManagedObjectContext *context = self.managedObjectContext;
-    NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
-    [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
-    [trackModel setValue: trackName forKey:@"name"];
-    [trackModel setValue:[NSNumber numberWithDouble:currentTrackDuration] forKey:@"duration"];
-    [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
-    NSError *error = nil;
-    
-    if (![context save:&error]) {
-        NSLog(@"Coulnd't save track! %@", [error localizedDescription]);
-    }
-    else {
-        [self.recordedTracksData addObject:trackModel];
-        [self.playbackManager addTrack:trackModel];
-        self.currentTrack = nil;
-        self.currentTrackInTime = 0;
-        
-        self.title = nil;
-        
-        [self.tableView beginUpdates];
-        [self.tableView deleteRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationLeft];
-        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
-        [self.tableView endUpdates];
-    }
-}
-
-- (void)stopPlaying {
-    
-    if (self.playbackManager.playing) {
-        [self.playbackManager stop];
-    }
-    
-    [self.playButton setTitle:@">" forState:UIControlStateNormal];
-}
-
--(void)playAudio
-{
-    [self.playButton setTitle:@"||" forState:UIControlStateNormal];
-    [self.playbackManager play];
-}
-
-- (void)arm {
-    int now = [[NSDate date] timeIntervalSince1970];
-    NSString *fileName = [NSString stringWithFormat:@"%d_%d.caf", now, arc4random() % 100000];
-    NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:fileName];
-    
-    NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
-    
-    NSError *error = nil;
-    self.currentTrack = [[AVAudioRecorder alloc] initWithURL:soundFileURL settings:self.recordSettings error:&error];
-    
-    if (error) {
-        NSLog(@"Error creating recorder: %@", [error localizedDescription]);
-    }
-    else {
-        [self.currentTrack prepareToRecord];
-    }
-}
-
 - (void)disarm {
+    //delete the recorded track and lose the reference to it. Bye!
     [self.currentTrack deleteRecording];
     self.currentTrack = nil;
+    
+    self.pendingSave = NO;
 }
 
 - (void)saveRecording {
+    self.pendingSave = NO;
     [self.tableView beginUpdates];
     [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0], nil] withRowAnimation:UITableViewRowAnimationTop];
     [self.tableView endUpdates];
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
 }
 
-- (void)noMorePendingTrackCell {
-    self.pendingSaveTrackCell.pendingSave = NO;
-    self.pendingSaveTrackCell = nil;
-}
-
 #pragma mark - Playback Manager Delegate
 
 - (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager {
-    [self stopPlaying];
-    
-    if (self.state != kRecording) {
-        if (self.state == kPlaying) {
-            self.state = kIdle;
-        }
-        else if (self.state == kPreviewing) {
-            self.state = kPendingSave;
-        }
-    }
+    [self.playbackControls playbackEnded];
+#warning The playback controls should be the only delegate of the playback manager. Move the scrubber bar into that class.
 }
 
 - (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager {
@@ -381,7 +225,7 @@
 {
     // Return the number of rows in the section.
     //The number of tracks + 1 for the "Create New" track.
-    return self.state == kPendingSave ? self.recordedTracksData.count : self.recordedTracksData.count + 1;
+    return self.pendingSave ? self.recordedTracksData.count : self.recordedTracksData.count + 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -392,17 +236,14 @@
     if (indexPath.row == self.recordedTracksData.count) {
         
         cell = [tableView dequeueReusableCellWithIdentifier:@"NewTrackView" forIndexPath:indexPath];
-        self.createNewTrackView = (NewTrackView *)cell;
         
         if (cell == nil) {
             tempViewController = [[UIViewController alloc] initWithNibName:@"NewTrackView" bundle:nil];
-            self.createNewTrackView = (NewTrackView *)tempViewController.view;
-            cell = self.createNewTrackView;
-            
+            cell = (UITableViewCell *)tempViewController.view;
         }
         
-        [self.createNewTrackView.recordButton addTarget:self action:@selector(onRecord:forEvent:) forControlEvents:UIControlEventTouchUpInside];
-        [self.createNewTrackView.cancelButton addTarget:self action:@selector(onCancelRecording:forEvent:) forControlEvents:UIControlEventTouchUpInside];
+        NewTrackView *createNewTrackView = (NewTrackView *)cell;
+        createNewTrackView.delegate = self;
     }
     else {
         NSManagedObject *data = [self.recordedTracksData objectAtIndex:indexPath.row];
@@ -422,14 +263,105 @@
         recordedTrack.pendingSave = NO;
         recordedTrack.delegate = self;
         
-        if (indexPath.row == self.recordedTracksData.count - 1 && self.state == kPendingSave) {
-            [self noMorePendingTrackCell];
+        if (self.pendingSave && indexPath.row == self.recordedTracksData.count - 1) {
             recordedTrack.pendingSave = YES;
-            self.pendingSaveTrackCell = recordedTrack;
         }
     }
     
     return cell;
+}
+
+#pragma mark - New Track Cell Delegate
+
+- (BOOL)newTrackViewShouldArmForRecording:(NewTrackView *)newTrackView {
+    //setup necessary info for creating a recording track
+    int now = [[NSDate date] timeIntervalSince1970];
+    NSString *fileName = [NSString stringWithFormat:@"%d_%d.caf", now, arc4random() % 100000];
+    NSString *soundFilePath = [self.basePath stringByAppendingPathComponent:fileName];
+    NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
+    
+    NSError *error = nil;
+    self.currentTrack = [[AVAudioRecorder alloc] initWithURL:soundFileURL settings:self.recordSettings error:&error];
+    if (error) {
+        NSLog(@"Error creating recorder: %@", [error localizedDescription]);
+    }
+    else {
+        
+        //arm the track
+        [self.currentTrack prepareToRecord];
+        [self.playbackManager stop];
+        
+        //setup the UI
+        self.navigationItem.titleView = nil;
+        self.navigationItem.title = @"Record";
+        self.navigationItem.rightBarButtonItem = nil;
+        
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)newTrackViewShouldBeginRecording:(NewTrackView *)newTrackView {
+    self.pendingSave = YES;
+    [self.currentTrack record];
+    self.currentTrackInTime = self.playbackManager.scrubberPosition;
+    
+    return YES;
+#warning I need to handle the edit button while recording/armed
+}
+
+- (void)newTrackViewEndRecording:(NewTrackView *)newTrackView {
+    //figure out the duration of the track first, otherwise it's 0
+    float currentTrackDuration = self.currentTrack.currentTime;
+    
+    //stop everything!
+    [self.currentTrack stop];
+    [self.playbackManager stop];
+    
+    //This gets the date the track was recorded on so we can set a default name
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+    dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    NSString *trackName = [dateFormatter stringFromDate:[NSDate date]];
+    
+    //Create an object for CoreData and save it to the database
+    NSManagedObjectContext *context = self.managedObjectContext;
+    NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
+    [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
+    [trackModel setValue: trackName forKey:@"name"];
+    [trackModel setValue:[NSNumber numberWithDouble:currentTrackDuration] forKey:@"duration"];
+    [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
+    NSError *error = nil;
+    
+    if (![context save:&error]) {
+        NSLog(@"Coulnd't save track! %@", [error localizedDescription]);
+    }
+    else { //If the save was successful
+        
+        //add the track
+        [self.recordedTracksData addObject:trackModel];
+        [self.playbackManager addTrack:trackModel];
+        
+        //nill out reference to the recorder for this track since we don't need it and reset some shit for no reason
+        self.currentTrack = nil;
+        self.currentTrackInTime = 0;
+        
+        //update the table view so that it shows the track pending save and no longer shows the new track
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView insertRowsAtIndexPaths:[[NSArray alloc] initWithObjects:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationRight];
+        [self.tableView endUpdates];
+        
+        //Put back the playback controls
+        self.navigationItem.titleView = self.playbackControls.view;
+        self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    }
+}
+
+- (void)newTrackViewDisarm:(NewTrackView *)newTrackView {
+    [self disarm];
 }
 
 #pragma mark - Recorded Track Cell Delegate
@@ -446,6 +378,7 @@
 
 - (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value {
     NSManagedObject *data = [self.recordedTracksData objectAtIndex:cell.tag];
+#warning This will throw an error if the user deletes any tracks.
     [data setValue:[NSNumber numberWithBool:!cell.muteSwitch.on] forKey:@"muted"];
     
     NSError *error = nil;
@@ -455,21 +388,18 @@
 }
 
 - (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell {
-    if (self.state == kArmed || self.state == kPendingSave) {
-        [self disarm];
-        self.state = kIdle;
-        [self.tableView beginUpdates];
-        [self deleteRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]];
-        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
-        [self.tableView endUpdates];
-        [self noMorePendingTrackCell];
-    }
+    [self disarm];
+    [self.tableView beginUpdates];
+#warning This should probably change. It's weird to not make the call directly to the table view
+    [self deleteRowAtIndexPath:[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]];
+    [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.recordedTracksData.count inSection:0]] withRowAnimation:UITableViewRowAnimationTop];
+    [self.tableView endUpdates];
+    cell.pendingSave = NO;
 }
 
 - (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell {
-    self.state = kIdle;
     [self saveRecording];
-    [self noMorePendingTrackCell];
+    cell.pendingSave = NO;
 }
 
 /*
@@ -497,23 +427,6 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
-}
-
-#pragma mark - Getters and Setters
-
-- (void)setState:(int)state {
-    if (_state != state) {
-        _state = state;
-        self.createNewTrackView.state = state;
-        
-        if (_state == kArmed) {
-            self.navigationItem.titleView = nil;
-            self.navigationItem.title = @"00:00.0";
-        }
-        else if (_state == kPendingSave || _state == kIdle) {
-            self.navigationItem.titleView = self.playbackControls.view;
-        }
-    }
 }
 
 @end

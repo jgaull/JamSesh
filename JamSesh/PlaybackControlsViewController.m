@@ -38,7 +38,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)onPlayButton:(id)sender {
+- (IBAction)onPlayButton:(id)sender {
     if (self.playbackManager.playing) {
         [self.playbackManager stop];
         [self.playButton setTitle:@">" forState:UIControlStateNormal];
@@ -49,8 +49,12 @@
     }
 }
 
-- (void)onBackButton:(id)sender {
+- (IBAction)onBackButton:(id)sender {
     self.playbackManager.scrubberPosition = 0;
+}
+
+- (void)playbackEnded {
+    [self.playButton setTitle:@">" forState:UIControlStateNormal];
 }
 
 @end

@@ -12,6 +12,12 @@
 @interface NewTrackView ()
 
 @property (strong, nonatomic) NSDate *startTime;
+@property (nonatomic) int state;
+
+@property (strong, nonatomic) IBOutlet UIButton *recordButton;
+@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
+@property (strong, nonatomic) IBOutlet UILabel *createNewTrackLabel;
+@property (strong, nonatomic) IBOutlet UILabel *timerLabel;
 
 @end
 
@@ -21,62 +27,73 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
+        self.state = kIdle;
     }
     return self;
 }
 
-- (void)setState:(int)state {
-    if (state != _state) {
-        
-        [self resetView];
-        
-        switch (state) {
-            case kIdle:
-            case kPlaying:
-            case kPendingSave:
-            case kPreviewing:
-                self.createNewTrackLabel.hidden = NO;
-                self.recordButton.hidden = NO;
-                [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
-                [self stopRecording];
-                break;
-            case kArmed:
-                self.cancelButton.hidden = NO;
-                self.timerLabel.hidden = NO;
-                self.recordButton.hidden = NO;
-                [self.recordButton setTitle:@"Start" forState:UIControlStateNormal];
-                self.timerLabel.text = @"0:0.0";
-                break;
-            case kRecording:
-                self.cancelButton.hidden = NO;
-                self.timerLabel.hidden = NO;
-                self.recordButton.hidden = NO;
-                [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
-                [self startRecording];
-                break;
-            default:
-                break;
-        }
-        
-        _state = state;
+- (IBAction)onRecordButton:(id)sender {
+    
+    switch (self.state) {
+        case kIdle:
+            [self becomeArmed];
+            break;
+        case kArmed:
+            [self startRecording];
+            break;
+        case kRecording:
+            [self becomeIdle];
+            break;
     }
 }
 
-- (void)resetView {
-    self.createNewTrackLabel.hidden = YES;
-    self.recordButton.hidden = YES;
+- (IBAction)onCancelButton:(id)sender {
+    [self becomeIdle];
+    
+    if ([self.delegate respondsToSelector:@selector(newTrackViewDisarm:)]) {
+        [self.delegate newTrackViewDisarm:self];
+    }
+}
+
+- (void)becomeIdle {
+    if (self.state == kRecording) {
+        [self stopRecording];
+    }
+    
+    self.state = kIdle;
+    self.timerLabel.text = @"00:00.0";
+    [self.recordButton setTitle:@"Record" forState:UIControlStateNormal];
     self.timerLabel.hidden = YES;
+    self.createNewTrackLabel.hidden = NO;
     self.cancelButton.hidden = YES;
 }
 
+- (void)becomeArmed {
+    if ([self.delegate newTrackViewShouldArmForRecording:self]) {
+        self.state = kArmed;
+        [self.recordButton setTitle:@"Start" forState:UIControlStateNormal];
+        self.cancelButton.hidden = NO;
+        self.timerLabel.hidden = NO;
+        self.createNewTrackLabel.hidden = YES;
+    }
+}
+
 - (void)startRecording {
-    self.startTime = [NSDate date];
-    [self updateTimer];
+    if ([self.delegate newTrackViewShouldBeginRecording:self]) {
+        self.state = kRecording;
+        [self.recordButton setTitle:@"Stop" forState:UIControlStateNormal];
+        self.cancelButton.hidden = YES;
+        self.startTime = [NSDate date];
+        [self updateTimer];
+    }
 }
 
 - (void)stopRecording {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateTimer) object:nil];
+    
+    if ([self.delegate respondsToSelector:@selector(newTrackViewEndRecording:)]) {
+        [self.delegate newTrackViewEndRecording:self];
+    }
 }
 
 - (void)updateTimer {

@@ -12,6 +12,7 @@
 
 #import "PlaybackManager.h"
 #import "RecordedTrackCell.h"
+#import "NewTrackView.h"
 
 static const int kIdle = 0;
 static const int kPlaying = 1;
@@ -20,29 +21,39 @@ static const int kRecording = 3;
 static const int kPendingSave = 4;
 static const int kPreviewing = 5;
 
-@interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate, RecordedTrackCellDelegate>
+@interface RecordViewController : UIViewController <AVAudioRecorderDelegate, PlaybackManagerDelegate, UITableViewDataSource, UITableViewDelegate, RecordedTrackCellDelegate, NewTrackViewDelegate>
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 
+//Table View Delegate
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)playbackManagerDidFinishPlaying:(PlaybackManager *)manager;
-- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
-
+//Table View Data Source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)appResignActive;
-- (void)appBecomeActive;
+//Playback Manager Delegate
+- (void)playbackManagerScrubberDidMove:(PlaybackManager *)manager;
 
+//Recorded Track Cell Delegate
 - (void)recordedTrackCellVolumeDidChange:(RecordedTrackCell *)cell value:(float)value;
 - (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value;
 - (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell;
 - (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell;
+
+//New Track Cell Delegate
+- (BOOL)newTrackViewShouldArmForRecording:(NewTrackView *)newTrackView;
+- (BOOL)newTrackViewShouldBeginRecording:(NewTrackView *)newTrackView;
+- (void)newTrackViewEndRecording:(NewTrackView *)newTrackView;
+- (void)newTrackViewDisarm:(NewTrackView *)newTrackView;
+
+//Methods for handling exiting the app
+- (void)appResignActive;
+- (void)appBecomeActive;
 
 @end
