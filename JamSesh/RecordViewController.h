@@ -42,6 +42,8 @@ static const int kPreviewing = 5;
 - (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value;
 - (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell;
 - (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell;
+- (void)recordedTrackCellUserDidBeginEditingName:(RecordedTrackCell *)cell;
+- (void)recordedTrackCellUserDidRename:(RecordedTrackCell *)cell name:(NSString *)name;
 
 //New Track Cell Delegate
 - (BOOL)newTrackViewShouldArmForRecording:(NewTrackView *)newTrackView;

@@ -85,6 +85,9 @@
     self.navigationItem.titleView = playbackControls.view;
     self.playbackControls.scrubberBar = self.scrubberBar;
     self.playbackManager.delegate = self.playbackControls;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onShowKeybaord:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onHideKeyboard:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -102,7 +105,7 @@
     
 }
 
-#pragma mark - Button Listeners
+#pragma mark - Event Listeners
 
 - (void)onEdit {
     [self.playbackManager stop];
@@ -113,6 +116,33 @@
     
     self.navigationItem.rightBarButtonItem.style = style;
     self.navigationItem.rightBarButtonItem.title = title;
+}
+
+- (void)onShowKeybaord:(NSNotification *)notification {
+    NSDictionary* keyboardInfo = [notification userInfo];
+    NSValue* keyboardFrameBegin = [keyboardInfo valueForKey:UIKeyboardFrameBeginUserInfoKey];
+    
+    CGRect keyboardBounds = [keyboardFrameBegin CGRectValue];
+    CGRect tableBounds = self.tableView.frame;
+    
+    self.tableView.frame = CGRectMake(tableBounds.origin.x, tableBounds.origin.y, tableBounds.size.width, tableBounds.size.height - keyboardBounds.size.width);
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        self.tableView.frame = CGRectMake(tableBounds.origin.x, tableBounds.origin.y, tableBounds.size.width, tableBounds.size.height - keyboardBounds.size.width);
+    }];
+}
+
+- (void)onHideKeyboard:(NSNotification *)notification {
+    NSDictionary* keyboardInfo = [notification userInfo];
+    NSValue* keyboardFrameBegin = [keyboardInfo valueForKey:UIKeyboardFrameBeginUserInfoKey];
+    
+    CGRect keyboardBounds = [keyboardFrameBegin CGRectValue];
+    CGRect tableBounds = self.tableView.frame;
+    
+    [UIView animateWithDuration:0.5 animations:^{
+        self.tableView.frame = CGRectMake(tableBounds.origin.x, tableBounds.origin.y, tableBounds.size.width, tableBounds.size.height + keyboardBounds.size.width);
+    }];
+#warning Too much copy pasta here. Fix that shit.
 }
 
 #pragma mark - Supporting Methods
@@ -383,6 +413,25 @@
     }
     
     cell.pendingSave = NO;
+}
+
+- (void)recordedTrackCellUserDidBeginEditingName:(RecordedTrackCell *)cell {
+    NSManagedObject *trackData = [self.managedObjectContext objectWithID:cell.trackId];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:[self.recordedTracksData indexOfObject:trackData] inSection:0];
+    [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+}
+
+- (void)recordedTrackCellUserDidRename:(RecordedTrackCell *)cell name:(NSString *)name {
+    NSManagedObject *trackData = [self.managedObjectContext objectWithID:cell.trackId];
+    [trackData setValue:name forKey:@"name"];
+    
+    NSError *error = nil;
+    if (![self.managedObjectContext save:&error]) {
+        NSLog(@"Error saving changing the name of the track in passive voice: %@", [error localizedDescription]);
+    }
+    else {
+        cell.trackLabel.text = name;
+    }
 }
 
 - (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell {

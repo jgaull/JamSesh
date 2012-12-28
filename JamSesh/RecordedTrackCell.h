@@ -11,7 +11,7 @@
 
 @protocol RecordedTrackCellDelegate;
 
-@interface RecordedTrackCell : UITableViewCell
+@interface RecordedTrackCell : UITableViewCell <UITextFieldDelegate>
 
 @property (nonatomic, weak) NSObject <RecordedTrackCellDelegate> *delegate;
 @property (nonatomic) BOOL pendingSave;
@@ -20,6 +20,10 @@
 @property (strong, nonatomic) IBOutlet UISlider *volumeSlider;
 @property (strong, nonatomic) IBOutlet UISwitch *muteSwitch;
 @property (strong, nonatomic) IBOutlet UILabel *trackLabel;
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+- (void)textFieldDidBeginEditing:(UITextField *)textField;
+- (void)textFieldDidEndEditing:(UITextField *)textField;
 
 @end
 
@@ -30,5 +34,7 @@
 - (void)recordedTrackCellMuteDidChange:(RecordedTrackCell *)cell value:(BOOL)value;
 - (void)recordedTrackCellUserDidSave:(RecordedTrackCell *)cell;
 - (void)recordedTrackCellUserDidCancel:(RecordedTrackCell *)cell;
+- (void)recordedTrackCellUserDidRename:(RecordedTrackCell *)cell name:(NSString *)name;
+- (void)recordedTrackCellUserDidBeginEditingName:(RecordedTrackCell *)cell;
 
 @end
