@@ -64,4 +64,20 @@
     }
 }
 
+- (void)onScrubberValueChange:(UISlider *)sender {
+    self.playbackManager.scrubberPosition = self.playbackManager.songLength * sender.value;
+}
+
+- (void)setScrubberBar:(UISlider *)scrubberBar {
+    if (_scrubberBar != scrubberBar) {
+        if (_scrubberBar) {
+            [_scrubberBar removeTarget:self action:@selector(onScrubberValueChange:) forControlEvents:UIControlEventValueChanged];
+        }
+        
+        _scrubberBar = scrubberBar;
+        [_scrubberBar addTarget:self action:@selector(onScrubberValueChange:) forControlEvents:UIControlEventValueChanged];
+    
+    }
+}
+
 @end

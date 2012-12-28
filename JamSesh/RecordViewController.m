@@ -115,7 +115,7 @@
     self.navigationItem.rightBarButtonItem.title = title;
 }
 
-#pragma mark - the magic
+#pragma mark - Supporting Methods
 
 - (void)disarm {
     //delete the recorded track and lose the reference to it. Bye!
@@ -288,8 +288,9 @@
 
 - (BOOL)newTrackViewShouldBeginRecording:(NewTrackView *)newTrackView {
     self.pendingSave = YES;
-    [self.currentTrack record];
     self.currentTrackInTime = self.playbackManager.scrubberPosition;
+    [self.currentTrack record];
+    [self.playbackManager play];
     
     return YES;
 }

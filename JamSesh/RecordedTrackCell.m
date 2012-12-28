@@ -12,6 +12,7 @@
 
 @property (strong, nonatomic) IBOutlet UIButton *cancelButton;
 @property (strong, nonatomic) IBOutlet UIButton *saveButton;
+@property (strong, nonatomic) IBOutlet UITextField *editingTextField;
 
 @end
 
@@ -31,6 +32,19 @@
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
+}
+
+- (void)setEditing:(BOOL)editing {
+    [super setEditing:editing];
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+    self.trackLabel.hidden = editing;
+    self.editingTextField.hidden = !editing;
+    
+    if (editing) {
+        self.editingTextField.text = self.textLabel.text;
+    }
 }
 
 - (void)setPendingSave:(BOOL)pendingSave {

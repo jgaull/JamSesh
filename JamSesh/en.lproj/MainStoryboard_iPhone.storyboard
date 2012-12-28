@@ -19,11 +19,7 @@
                                     <outlet property="delegate" destination="Hxn-tq-0Bn" id="ox8-gg-RFC"/>
                                 </connections>
                             </tableView>
-                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="pjx-Sl-ZP6">
-                                <connections>
-                                    <action selector="scrubberBar:" destination="Hxn-tq-0Bn" eventType="valueChanged" id="nk2-e0-VB6"/>
-                                </connections>
-                            </slider>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="pjx-Sl-ZP6"/>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -74,7 +70,6 @@
         <class className="RecordViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/RecordViewController.h"/>
             <relationships>
-                <relationship kind="outlet" name="playButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="scrubberBar" candidateClass="UISlider"/>
                 <relationship kind="outlet" name="tableView" candidateClass="UITableView"/>
             </relationships>
