@@ -39,6 +39,12 @@
     return self;
 }
 
+- (void)dealloc {
+    self.song = nil;
+    self.players = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)addTrack:(NSManagedObject *)track {
     if (![self.song containsObject:track]) {
         [self.song addObject:track];
@@ -148,17 +154,19 @@
 
 - (void)onTrackDataChanged:(NSNotification *)note {
     NSSet *updatedObjects = [[note userInfo] objectForKey:NSUpdatedObjectsKey];
-    for (NSManagedObject *trackData in updatedObjects) {
-        AVAudioPlayer *player = [self getPlayerFromData:trackData];
-        
-        if (player == nil && ![[trackData valueForKey:@"muted"] boolValue]) {
-            [self playTrack:trackData];
-        }
-        else if ([[trackData valueForKey:@"muted"] boolValue]) {
-            player.volume = 0;
-        }
-        else {
-            player.volume = [[trackData valueForKey:@"volume"] floatValue];
+    for (NSManagedObject *changedObject in updatedObjects) {
+        if ([changedObject.entity.description isEqualToString:@"TrackModel"]) {
+            AVAudioPlayer *player = [self getPlayerFromData:changedObject];
+            
+            if (player == nil && ![[changedObject valueForKey:@"muted"] boolValue]) {
+                [self playTrack:changedObject];
+            }
+            else if ([[changedObject valueForKey:@"muted"] boolValue]) {
+                player.volume = 0;
+            }
+            else {
+                player.volume = [[changedObject valueForKey:@"volume"] floatValue];
+            }
         }
     }
 }

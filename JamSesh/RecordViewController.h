@@ -24,6 +24,7 @@ static const int kPreviewing = 5;
 @interface RecordViewController : UIViewController <AVAudioRecorderDelegate, UITableViewDataSource, UITableViewDelegate, RecordedTrackCellDelegate, NewTrackViewDelegate>
 
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (strong, nonatomic) NSManagedObject *song;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 
 //Table View Delegate

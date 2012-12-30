@@ -48,12 +48,15 @@
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     //create data and fill it up here.
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"TrackModel" inManagedObjectContext:self.managedObjectContext];
-    [fetchRequest setEntity:entity];
-    NSError *error = nil;
-    NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-    self.recordedTracksData = [[NSMutableArray alloc] initWithArray:fetchedObjects];
+    self.recordedTracksData = [[NSMutableArray alloc] init];
+    NSString *tracks = [self.song valueForKey:@"tracks"];
+    NSArray *trackDataUrls = [tracks componentsSeparatedByString:@","];
+    for (NSString *dataUrl in trackDataUrls) {
+        NSURL *url = [NSURL URLWithString:dataUrl];
+        NSManagedObjectID *objectId = [self.managedObjectContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
+        [self.recordedTracksData addObject:[self.managedObjectContext objectWithID:objectId]];
+    }
+    
     self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData andContext:self.managedObjectContext];
     
     //register the table view cells that we'll be using.
@@ -103,6 +106,19 @@
 
 - (void)appBecomeActive {
     
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    self.basePath = nil;
+    self.recordSettings = nil;
+    self.currentTrack = nil;
+    self.playbackManager = nil;
+    self.playbackControls = nil;
+    self.recordedTracksData = nil;
+    self.scrubberBar = nil;
+    self.managedObjectContext = nil;
 }
 
 #pragma mark - Event Listeners
@@ -340,36 +356,54 @@
     NSString *trackName = [dateFormatter stringFromDate:[NSDate date]];
     
     //Create an object for CoreData and save it to the database
-    NSManagedObjectContext *context = self.managedObjectContext;
-    NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:context];
+    NSManagedObject *trackModel = [NSEntityDescription insertNewObjectForEntityForName:@"TrackModel" inManagedObjectContext:self.managedObjectContext];
     [trackModel setValue:self.currentTrack.url.filePathURL.path forKey:@"fileURL"];
     [trackModel setValue: trackName forKey:@"name"];
     [trackModel setValue:[NSNumber numberWithDouble:currentTrackDuration] forKey:@"duration"];
     [trackModel setValue:[NSNumber numberWithDouble:self.currentTrackInTime] forKey:@"inPoint"];
     NSError *error = nil;
     
-    if (![context save:&error]) {
+    if (![self.managedObjectContext save:&error]) {
         NSLog(@"Coulnd't save track! %@", [error localizedDescription]);
     }
     else { //If the save was successful
         
-        //add the track
-        [self.recordedTracksData addObject:trackModel];
-        [self.playbackManager addTrack:trackModel];
+        //add the track to the song
+        NSURL *trackUrl = trackModel.objectID.URIRepresentation;
+        NSString *trackList = [self.song valueForKey:@"tracks"];
         
-        //nill out reference to the recorder for this track since we don't need it and reset some shit for no reason
-        self.currentTrack = nil;
-        self.currentTrackInTime = 0;
+        if (trackList == nil) {
+            trackList = @"";
+        }
+        else {
+            trackList = [NSString stringWithFormat:@"%@,", trackList];
+        }
         
-        //update the table view so that it shows the track pending save and no longer shows the new track
-        [self.tableView beginUpdates];
-        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationLeft];
-        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
-        [self.tableView endUpdates];
+        trackList = [NSString stringWithFormat:@"%@%@", trackList, [trackUrl absoluteString]];
+        [self.song setValue:trackList forKey:@"tracks"];
         
-        //Put back the playback controls
-        self.navigationItem.titleView = self.playbackControls.view;
-        self.navigationItem.rightBarButtonItem = self.editButtonItem;
+        NSError *error = nil;
+        if (![self.managedObjectContext save:&error]) {
+            NSLog(@"Error writing track to song: %@", [error localizedDescription]);
+        }
+        else {
+            [self.recordedTracksData addObject:trackModel];
+            [self.playbackManager addTrack:trackModel];
+            
+            //nill out reference to the recorder for this track since we don't need it and reset some shit for no reason
+            self.currentTrack = nil;
+            self.currentTrackInTime = 0;
+            
+            //update the table view so that it shows the track pending save and no longer shows the new track
+            [self.tableView beginUpdates];
+            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationLeft];
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.recordedTracksData.count - 1 inSection:0]] withRowAnimation:UITableViewRowAnimationRight];
+            [self.tableView endUpdates];
+            
+            //Put back the playback controls
+            self.navigationItem.titleView = self.playbackControls.view;
+            self.navigationItem.rightBarButtonItem = self.editButtonItem;
+        }
     }
 }
 
@@ -463,6 +497,12 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+}
+
+- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+    if (_managedObjectContext != managedObjectContext) {
+        _managedObjectContext = managedObjectContext;
+    }
 }
 
 @end
