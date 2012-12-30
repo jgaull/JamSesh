@@ -183,8 +183,7 @@
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete &&
-        [self deleteDataAtIndex:indexPath.row]) {
+    if (editingStyle == UITableViewCellEditingStyleDelete && [self deleteDataAtIndex:indexPath.row]) {
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {

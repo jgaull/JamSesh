@@ -81,7 +81,11 @@
 #pragma mark - Getters and Setters
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
-    self.trackLabel.hidden = editing;
+    
+    if (!self.pendingSave) {
+        self.trackLabel.hidden = editing;
+    }
+    
     self.muteSwitch.hidden = editing;
     self.volumeSlider.hidden = editing;
     self.editingTextField.hidden = !editing;
@@ -89,7 +93,7 @@
     if (editing) {
         self.editingTextField.text = self.trackLabel.text;
     }
-    else if (super.editing) {
+    else if (self.editingTextField.editing) {
         if ([self.delegate respondsToSelector:@selector(recordedTrackCellUserDidRename:name:)]) {
             [self.delegate recordedTrackCellUserDidRename:self name:self.editingTextField.text];
         }
@@ -104,6 +108,12 @@
     self.trackLabel.hidden = pendingSave;
     self.cancelButton.hidden = !pendingSave;
     self.saveButton.hidden = !pendingSave;
+    
+    if (!pendingSave) {
+        self.editingTextField.text = self.trackLabel.text;
+    }
+    
+    _pendingSave = pendingSave;
 }
 
 @end
