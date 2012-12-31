@@ -11,6 +11,7 @@
 #import "RecordedTrackCell.h"
 #import "PlaybackManager.h"
 #import "PlaybackControlsViewController.h"
+#import "SongUtils.h"
 
 @interface RecordViewController ()
 
@@ -48,14 +49,7 @@
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     //create data and fill it up here.
-    self.recordedTracksData = [[NSMutableArray alloc] init];
-    NSString *tracks = [self.song valueForKey:@"tracks"];
-    NSArray *trackDataUrls = [tracks componentsSeparatedByString:@","];
-    for (NSString *dataUrl in trackDataUrls) {
-        NSURL *url = [NSURL URLWithString:dataUrl];
-        NSManagedObjectID *objectId = [self.managedObjectContext.persistentStoreCoordinator managedObjectIDForURIRepresentation:url];
-        [self.recordedTracksData addObject:[self.managedObjectContext objectWithID:objectId]];
-    }
+    self.recordedTracksData = [[NSMutableArray alloc] initWithArray:[SongUtils getTracksFromSong:self.song fromContext:self.managedObjectContext]];
     
     self.playbackManager = [[PlaybackManager alloc] initWithTracks:self.recordedTracksData andContext:self.managedObjectContext];
     
@@ -210,27 +204,9 @@
 - (BOOL)deleteDataAtIndex:(int)row {
     // Delete the row from the data source
     NSManagedObject *trackData = [self.recordedTracksData objectAtIndex:row];
-    NSURL *fileUrl = [NSURL fileURLWithPath:[trackData valueForKey:@"fileURL"]];
-    [self.recordedTracksData removeObject:trackData];
-    [self.playbackManager removeTrack:trackData];
-    [self.managedObjectContext deleteObject:trackData];
-    
-    NSError *error = nil;
-    [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
-    
-    if (error) {
-        NSLog(@"Error deleting file: %@", [error localizedDescription]);
-        
-        if ([[NSFileManager defaultManager] isReadableFileAtPath:fileUrl.path]) {
-            [self.managedObjectContext undo];
-        }
-    }
-    else {
-        [self.managedObjectContext save:&error];
-        
-        if (error) {
-            NSLog(@"Error deleting managed object for track: %@", [error localizedDescription]);
-        }
+    if ([SongUtils deleteTrack:trackData fromContext:self.managedObjectContext]) {
+        [self.recordedTracksData removeObject:trackData];
+        [self.playbackManager removeTrack:trackData];
         
         if (self.recordedTracksData.count == 0) {
             [self onEdit];

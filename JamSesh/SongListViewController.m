@@ -8,6 +8,7 @@
 
 #import "SongListViewController.h"
 #import "RecordViewController.h"
+#import "SongUtils.h"
 
 @interface SongListViewController ()
 
@@ -113,19 +114,40 @@
 }
 */
 
-/*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+        NSManagedObject *songData = [self.songs objectAtIndex:indexPath.row];
+        NSArray *trackList = [SongUtils getTracksFromSong:songData fromContext:self.managedObjectContext];
+        BOOL aFailure = NO;
+        for (NSManagedObject *track in trackList) {
+            ;
+            if (![SongUtils deleteTrack:track fromContext:self.managedObjectContext]) {
+                aFailure = YES;
+            }
+        }
+        
+        if (!aFailure) {
+            
+            [self.managedObjectContext deleteObject:songData];
+            NSError *error = nil;
+            [self.managedObjectContext save:&error];
+            if (error) {
+                NSLog(@"Error deleting song from database: %@", [error localizedDescription]);
+            }
+            else {
+                [self.songs removeObject:songData];
+                [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                
+                if (self.songs.count == 0) {
+                    self.editing = NO;
+                }
+            }
+        }
+    }
 }
-*/
 
 /*
 // Override to support rearranging the table view.
